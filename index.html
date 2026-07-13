@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>TVK T.Nagar</title>
+<meta name="description" content="TVK T.Nagar constituency app — complaints, tracking, events, volunteering and cadre tools.">
+<!-- iOS install -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TVK T.Nagar">
+<meta name="theme-color" content="#B71C1C">
+<!-- manifest + apple-touch-icon injected at runtime (see JS) so the file stays self-contained -->
+<style>
+:root{
+  --gold:#F5B301;
+  --gold-soft:#FCE9B4;
+  --ivory:#FFF9F0;
+  --ink:#221A14;
+  --ink-60:rgba(34,26,20,.62);
+  --ink-25:rgba(34,26,20,.22);
+  --card:#FFFFFF;
+  --ok:#1E7A46;
+  --warn:#B96A00;
+  --line:rgba(34,26,20,.10);
+  --radius:16px;
+  --brand:#B71C1C;      /* TVK crimson */
+  --brand-deep:#7A0F12;
+  --brand-tint:#FBE7E4;
+}
+body[data-role="citizen"]{ --brand:#B71C1C; --brand-deep:#7A0F12; --brand-tint:#FBE7E4; }
+body[data-role="cadre"]{ --brand:#8B1418; --brand-deep:#5E0D10; --brand-tint:#F6E0E0; }
+body[data-role="admin"]{ --brand:#5C1A1D; --brand-deep:#3A0F11; --brand-tint:#F0E3E3; }
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Tamil","Noto Sans",sans-serif;
+  background:var(--ivory);color:var(--ink);
+  min-height:100%;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom));
+  transition:background .3s;
+}
+button{font:inherit;border:0;cursor:pointer;background:none}
+input,select,textarea{font:inherit;color:var(--ink)}
+
+/* ---------- type ---------- */
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);opacity:.85}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+h2{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.ta{font-size:12px;color:var(--ink-60)}
+.muted{color:var(--ink-60);font-size:13px;line-height:1.45}
+
+/* ---------- app header ---------- */
+header.app{
+  position:sticky;top:0;z-index:40;
+  background:var(--brand);color:#fff;
+  border-bottom:3px solid var(--gold);
+  padding:calc(10px + env(safe-area-inset-top)) 16px 12px;
+  display:flex;align-items:center;gap:10px;
+}
+header.app .flag{width:30px;height:30px;border-radius:8px;flex:none;
+  background:linear-gradient(180deg,var(--brand-deep) 0 32%,var(--gold) 32% 68%,var(--brand-deep) 68% 100%);
+  border:1.5px solid rgba(255,255,255,.35)}
+header.app .t{flex:1;min-width:0}
+header.app .t b{display:block;font-size:15px;letter-spacing:-.01em}
+header.app .t span{display:block;font-size:11px;opacity:.75}
+header.app .pill{font-size:11px;font-weight:700;padding:6px 10px;border-radius:999px;
+  background:rgba(255,255,255,.16);color:#fff}
+
+/* ---------- screens & sections ---------- */
+.screen{display:none;padding:18px 16px 24px;max-width:520px;margin:0 auto}
+.screen.on{display:block;animation:rise .22s ease}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.on{animation:none}}
+.stack>*+*{margin-top:14px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.hero{
+  background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 82%),linear-gradient(0deg,var(--brand),var(--brand));
+  border-bottom:4px solid var(--gold);
+  color:#fff;border-radius:20px;padding:20px 18px;position:relative;overflow:hidden;
+}
+.hero::after{content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,var(--gold) 0%,transparent 70%);opacity:.35}
+.hero h1{color:#fff;position:relative}
+.hero .gold{color:var(--gold)}
+.hero p{position:relative;margin-top:8px;font-size:13px;opacity:.9;line-height:1.5}
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stats .s{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
+.stats b{display:block;font-size:17px;font-weight:800;color:var(--brand)}
+.stats span{font-size:10px;color:var(--ink-60);letter-spacing:.02em}
+
+/* action grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.action{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;text-align:left;display:block;width:100%}
+.action .ic{width:38px;height:38px;border-radius:10px;background:var(--brand-tint);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:9px}
+.action b{display:block;font-size:14px;font-weight:700}
+.action span{display:block;font-size:11.5px;color:var(--ink-60);margin-top:2px;line-height:1.35}
+.action:active{transform:scale(.98)}
+
+/* list rows */
+.row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .dot{width:40px;height:40px;border-radius:11px;flex:none;background:var(--brand-tint);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.row .m{flex:1;min-width:0}
+.row .m b{display:block;font-size:14px}
+.row .m span{display:block;font-size:12px;color:var(--ink-60);margin-top:1px}
+
+/* badges */
+.badge{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.badge.open{background:#FFF1D6;color:var(--warn)}
+.badge.prog{background:#E3ECFF;color:#2851A3}
+.badge.done{background:#DFF2E6;color:var(--ok)}
+
+/* forms */
+label.f{display:block;font-size:12.5px;font-weight:700;margin:14px 0 6px}
+label.f small{font-weight:400;color:var(--ink-60)}
+.in{width:100%;padding:12px 13px;border:1.5px solid var(--ink-25);border-radius:12px;background:#fff;font-size:15px}
+.in:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:transparent}
+textarea.in{min-height:96px;resize:vertical}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  background:var(--brand);color:#fff;font-weight:800;font-size:15px;
+  padding:15px;border-radius:14px;margin-top:18px}
+.btn:active{transform:scale(.985)}
+.btn.ghost{background:var(--brand-tint);color:var(--brand)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+
+/* timeline */
+.tl{list-style:none;margin-top:14px}
+.tl li{position:relative;padding:0 0 20px 26px}
+.tl li::before{content:"";position:absolute;left:6px;top:5px;width:9px;height:9px;border-radius:50%;
+  background:var(--ink-25)}
+.tl li::after{content:"";position:absolute;left:9.5px;top:16px;bottom:-2px;width:2px;background:var(--line)}
+.tl li:last-child::after{display:none}
+.tl li.done::before{background:var(--ok)}
+.tl li.now::before{background:var(--gold);box-shadow:0 0 0 4px var(--gold-soft)}
+.tl b{display:block;font-size:13.5px}
+.tl span{font-size:12px;color:var(--ink-60)}
+
+/* gallery before/after */
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.ba div{aspect-ratio:4/3;display:flex;align-items:flex-end;padding:8px;font-size:10px;font-weight:800;
+  letter-spacing:.08em;color:#fff}
+.ba .b4{background:linear-gradient(160deg,#9d8f7d,#7c7061)}
+.ba .af{background:linear-gradient(160deg,var(--brand),var(--brand-deep))}
+
+/* chips / tabs inside screens */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;
+  border:1.5px solid var(--ink-25);color:var(--ink-60);background:#fff}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+
+/* bottom nav */
+nav.bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:#fff;border-top:1px solid var(--line);
+  display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  max-width:520px;margin:0 auto;
+}
+nav.bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:7px 2px;color:var(--ink-60);font-size:10.5px;font-weight:700;border-radius:12px}
+nav.bar button .i{font-size:20px;line-height:1}
+nav.bar button.on{color:var(--brand);background:var(--brand-tint)}
+
+/* membership card (signature element) */
+.mcard{
+  border-radius:20px;overflow:hidden;color:#fff;position:relative;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.08) 0 40%, transparent 40%),
+    linear-gradient(180deg,#8B1418 0 34%,var(--gold) 34% 66%,#8B1418 66% 100%);
+  box-shadow:0 14px 34px -14px rgba(94,13,16,.55);
+}
+.mcard .top{padding:16px 18px 8px;display:flex;justify-content:space-between;align-items:flex-start}
+.mcard .top b{font-size:15px;letter-spacing:.02em}
+.mcard .top span{font-size:10px;opacity:.85;display:block}
+.mcard .mid{padding:10px 18px;color:var(--ink)}
+.mcard .mid .nm{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.mcard .mid .id{font-size:12px;font-weight:700;opacity:.75;margin-top:2px}
+.mcard .bot{padding:10px 18px 16px;display:flex;justify-content:space-between;align-items:flex-end}
+.mcard .bot .kv span{display:block;font-size:9.5px;opacity:.8;letter-spacing:.1em;text-transform:uppercase}
+.mcard .bot .kv b{font-size:13px}
+.qr{width:56px;height:56px;background:#fff;border-radius:8px;padding:5px;display:grid;
+  grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:1.5px}
+.qr i{background:var(--ink);border-radius:1px}
+.qr i.o{background:transparent}
+
+/* progress bars */
+.pb{height:7px;border-radius:99px;background:var(--brand-tint);overflow:hidden;margin-top:6px}
+.pb i{display:block;height:100%;background:var(--brand);border-radius:99px}
+
+/* mini bar chart */
+.bars{display:flex;align-items:flex-end;gap:7px;height:90px;margin-top:12px}
+.bars .b{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:9.5px;color:var(--ink-60)}
+.bars .b i{width:100%;border-radius:6px 6px 2px 2px;background:var(--brand);min-height:6px}
+.bars .b:nth-child(even) i{background:var(--gold)}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:.25s;z-index:99;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* role select splash */
+#splash{position:fixed;inset:0;z-index:100;background:linear-gradient(170deg,#8B1418 0%,#5E0D10 78%);
+  color:#fff;display:flex;flex-direction:column;justify-content:center;padding:32px 24px calc(32px + env(safe-area-inset-bottom))}
+#splash .stripe{height:8px;width:64px;border-radius:99px;background:var(--gold);margin-bottom:20px}
+#splash h1{color:#fff;font-size:30px}
+#splash p{margin:10px 0 26px;font-size:13.5px;opacity:.85;line-height:1.55}
+#splash .roles{display:flex;flex-direction:column;gap:12px}
+#splash .roles button{background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.22);
+  color:#fff;border-radius:16px;padding:16px;text-align:left;display:flex;gap:14px;align-items:center}
+#splash .roles button:active{background:rgba(255,255,255,.18)}
+#splash .roles .ic{width:42px;height:42px;border-radius:12px;background:var(--gold);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+#splash .roles b{display:block;font-size:15px}
+#splash .roles span{display:block;font-size:12px;opacity:.8;margin-top:2px}
+#splash .foot{margin-top:26px;font-size:11px;opacity:.6;text-align:center}
+
+
+/* attachments & recorder */
+.attach{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.attach .a{flex:1;min-width:92px;border:1.5px dashed var(--ink-25);border-radius:12px;background:#fff;
+  padding:12px 8px;text-align:center;font-size:11.5px;font-weight:700;color:var(--ink-60)}
+.attach .a .i{display:block;font-size:20px;margin-bottom:4px}
+.attach .a.ok{border-style:solid;border-color:var(--ok);color:var(--ok);background:#F2FBF5}
+.attach .a.rec{border-style:solid;border-color:#C0262B;color:#C0262B;background:#FDF1F1;animation:pulse 1.1s infinite}
+@keyframes pulse{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.attach .a.rec{animation:none}}
+.preview{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.preview img,.preview video{width:100%;border-radius:12px;border:1px solid var(--line);max-height:220px;object-fit:cover}
+.preview audio{width:100%}
+.geo{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;font-weight:700;
+  background:var(--brand-tint);color:var(--brand);border-radius:12px;padding:10px 12px}
+.geo a{color:var(--brand)}
+/* stars */
+.stars{display:flex;gap:6px;margin-top:8px}
+.stars button{font-size:26px;color:var(--ink-25);line-height:1}
+.stars button.on{color:var(--gold)}
+/* notif bell */
+.bell{position:relative;font-size:19px;color:#fff;padding:4px 6px}
+.bell b{position:absolute;top:-2px;right:-2px;background:var(--gold);color:var(--ink);font-size:9.5px;
+  min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+/* admin detail */
+.detail{margin-top:10px;padding-top:12px;border-top:1px dashed var(--ink-25)}
+.kvline{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0}
+.kvline span{color:var(--ink-60)}
+.fb{background:var(--gold-soft);border-radius:12px;padding:12px;margin-top:10px;font-size:13px;line-height:1.45}
+.fb b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;color:var(--warn)}
+.dept{background:#EEF3FB;color:#2851A3;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:12.5px;font-weight:700}
+
+
+/* services / directory */
+.emg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.emg a{display:block;text-decoration:none;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 6px;text-align:center;color:var(--ink)}
+.emg a b{display:block;font-size:16px;color:var(--brand)}
+.emg a span{font-size:10.5px;color:var(--ink-60)}
+.dir .row a.call{flex:none;text-decoration:none;background:var(--brand);color:#fff;font-size:12px;
+  font-weight:800;padding:9px 13px;border-radius:99px}
+.dir .row .m a{color:var(--brand);font-size:12px;font-weight:700}
+.ladder{list-style:none;counter-reset:lv}
+.ladder li{counter-increment:lv;display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line)}
+.ladder li:last-child{border:0}
+.ladder li::before{content:counter(lv);flex:none;width:26px;height:26px;border-radius:50%;
+  background:var(--brand-tint);color:var(--brand);font-weight:800;font-size:13px;
+  display:flex;align-items:center;justify-content:center}
+.ladder b{display:block;font-size:13.5px}.ladder span{font-size:12px;color:var(--ink-60)}
+details.faq{border-bottom:1px solid var(--line);padding:11px 0}
+details.faq:last-child{border:0}
+details.faq summary{font-size:13.5px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between}
+details.faq summary::after{content:"+";color:var(--brand);font-weight:800}
+details.faq[open] summary::after{content:"–"}
+details.faq p{font-size:12.5px;color:var(--ink-60);margin-top:7px;line-height:1.5}
+body.big{zoom:1.14}
+.langbtn{font-size:12px;font-weight:800;padding:6px 10px;border-radius:999px;background:var(--gold);color:var(--ink)}
+
+
+/* aesthetic pass */
+.card{box-shadow:0 1px 2px rgba(34,26,20,.04),0 8px 24px -18px rgba(34,26,20,.25)}
+.hero{box-shadow:0 18px 40px -22px var(--brand-deep)}
+.hero::before{content:"";position:absolute;inset:0;opacity:.14;
+  background-image:radial-gradient(circle at center,#fff 1.3px,transparent 1.6px);
+  background-size:22px 22px}
+#splash::before{content:"";position:absolute;inset:0;opacity:.10;pointer-events:none;
+  background-image:radial-gradient(circle at center,var(--gold) 1.4px,transparent 1.8px);
+  background-size:26px 26px}
+h1{letter-spacing:-.025em}
+.eyebrow::before{content:"";display:inline-block;width:16px;height:3px;border-radius:2px;
+  background:var(--gold);margin-right:7px;vertical-align:middle}
+.btn{box-shadow:0 8px 18px -10px var(--brand);transition:transform .12s}
+.btn.ghost,.btn.gold{box-shadow:none}
+.action{transition:transform .12s,box-shadow .12s}
+.action:active{box-shadow:0 2px 8px -4px rgba(34,26,20,.3)}
+nav.bar{box-shadow:0 -6px 20px -14px rgba(34,26,20,.35);border-radius:18px 18px 0 0}
+nav.bar button{transition:background .15s,color .15s;position:relative}
+nav.bar button.on::before{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  width:22px;height:3px;border-radius:2px;background:var(--gold)}
+.stats .s{position:relative;overflow:hidden}
+.stats .s::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,var(--brand),var(--gold))}
+.badge{letter-spacing:.02em}
+.mcard{box-shadow:0 20px 44px -18px rgba(94,13,16,.6)}
+/* chat assistant */
+#chatBox{display:flex;flex-direction:column;gap:10px;min-height:300px;padding-bottom:8px}
+.msg{max-width:82%;padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.45;animation:rise .2s ease}
+.msg.bot{background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px;align-self:flex-start}
+.msg.me{background:var(--brand);color:#fff;border-bottom-right-radius:6px;align-self:flex-end}
+.qr-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.qr-chips button{font-size:13px;font-weight:700;padding:10px 15px;border-radius:999px;
+  border:1.5px solid var(--brand);color:var(--brand);background:#fff}
+.qr-chips button:active{background:var(--brand);color:#fff}
+.chat-in{display:flex;gap:8px;position:sticky;bottom:calc(80px + env(safe-area-inset-bottom))}
+.chat-in input{flex:1}
+.chat-in .send{width:auto;margin:0;padding:12px 16px}
+
+
+/* success check animation */
+#cDone .eyebrow::before{display:none}
+.bigcheck{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 10px;
+  animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.bigcheck{animation:none}}
+
+#installBtn{display:none}
+#installBtn.show{display:flex}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="toast" role="status"></div>
+
+<!-- ============ ROLE SPLASH ============ -->
+<div id="splash">
+  <div class="stripe"></div>
+  <div class="eyebrow" style="color:var(--gold)">தமிழக வெற்றிக் கழகம் · T.Nagar</div>
+  <h1>TVK T.Nagar</h1>
+  <p>Constituency initiative of <b>Bussy Anand</b>, Minister for Rural Development &amp; Water Resources, GoTN · General Secretary, TVK.<br><br>Raise and track complaints, join drives, manage ward work. Choose how you're signing in today.</p>
+  <div class="roles">
+    <button onclick="setRole('citizen')">
+      <div class="ic">&#127963;</div>
+      <div><b>Citizen</b><span>Raise complaints, track status, events &amp; volunteering</span></div>
+    </button>
+    <button onclick="setRole('cadre')">
+      <div class="ic">&#9873;</div>
+      <div><b>TVK Cadre</b><span>Membership card, campaigns &amp; ward tasks</span></div>
+    </button>
+    <button onclick="setRole('admin')">
+      <div class="ic">&#128200;</div>
+      <div><b>Ward Admin</b><span>Complaint queue, assignment &amp; analytics</span></div>
+    </button>
+  </div>
+  <button class="btn gold" id="installBtn" onclick="doInstall()">&#8681; Install app on this phone</button>
+  <div class="foot">Roles are switchable anytime from the header · Demo data on device</div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="app hide" id="hdr">
+  <div class="flag"></div>
+  <div class="t"><b id="hdrTitle">TVK T.Nagar</b><span id="hdrSub">Citizen</span></div>
+  <button class="bell hide" id="bellBtn" onclick="go('c-notifs')" aria-label="Notifications">&#128276;<b id="bellCt" class="hide">0</b></button>
+  <button class="langbtn" id="langBtn" onclick="toggleLang()">தமிழ்</button>
+  <button class="pill" onclick="showSplash()" data-i18n="switch">Switch role</button>
+</header>
+
+<!-- ============ CITIZEN: HOME ============ -->
+<section class="screen" id="c-home">
+  <div class="stack">
+    <div class="hero">
+      <div class="eyebrow" style="color:var(--gold)">மக்கள் சேவை · Together for a</div>
+      <h1 data-i18n="h_home">Better <span class="gold">T.Nagar</span></h1>
+      <p>Report issues, track progress, see real change — every complaint logged, assigned to a ward officer, and closed end-to-end.</p>
+    </div>
+
+    <div class="card" style="display:flex;gap:14px;align-items:center">
+      <div style="flex:none;width:54px;height:54px;border-radius:50%;background:linear-gradient(160deg,#8B1418,#5E0D10);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;border:3px solid var(--gold)">BA</div>
+      <div>
+        <div class="eyebrow" style="font-size:10px">Your representative</div>
+        <b style="font-size:15px;display:block;margin-top:2px">Bussy Anand</b>
+        <span class="muted" style="display:block;font-size:11.5px;line-height:1.4">Minister for Rural Development &amp; Water Resources, Govt. of Tamil Nadu<br>General Secretary, Tamizhaga Vettri Kazhagam (TVK)</span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="s"><b id="stTotal">1,284</b><span>Complaints</span></div>
+      <div class="s"><b id="stDone">946</b><span>Resolved</span></div>
+      <div class="s"><b>512</b><span>Volunteers</span></div>
+      <div class="s"><b>2.3d</b><span>Avg close</span></div>
+    </div>
+    <div class="grid2">
+      <button class="action" onclick="startChat()" style="grid-column:1/-1;background:linear-gradient(135deg,var(--brand-tint),#fff);border-color:var(--brand)">
+        <div class="ic" style="background:var(--brand);color:#fff">&#128172;</div>
+        <b data-i18n="a_chat">Need help? Just chat</b><span data-i18n="a_chat2">The assistant files your complaint for you — Tamil or English, speak or tap</span>
+      </button>
+      <button class="action" onclick="go('c-complaint')">
+        <div class="ic">&#128221;</div><b data-i18n="a_comp">Raise a complaint</b><span data-i18n="a_comp2">Roads, water, garbage, lights &amp; more</span>
+      </button>
+      <button class="action" onclick="go('c-track')">
+        <div class="ic">&#128269;</div><b data-i18n="a_track">Track status</b><span data-i18n="a_track2">By complaint ID or phone</span>
+      </button>
+      <button class="action" onclick="go('c-events')">
+        <div class="ic">&#127917;</div><b data-i18n="a_ev">Events &amp; gallery</b><span data-i18n="a_ev2">Before/after works, ward drives</span>
+      </button>
+      <button class="action" onclick="go('c-volunteer')">
+        <div class="ic">&#129309;</div><b data-i18n="a_vol">Volunteer</b><span data-i18n="a_vol2">Join 512+ active volunteers</span>
+      </button>
+      <button class="action" onclick="shareApp()" style="grid-column:1/-1">
+        <div class="ic">&#128241;</div><b>Share this app</b><span>Send the demo link on WhatsApp</span>
+      </button>
+    </div>
+    <div class="card">
+      <h2>Upcoming in your ward</h2>
+      <div class="row"><div class="dot">25<br></div><div class="m"><b>Mega Clean Drive</b><span>T.Nagar Main Road · 7:00 AM · 25 Jul</span></div></div>
+      <div class="row"><div class="dot">01</div><div class="m"><b>Tree Plantation Drive</b><span>Panagal Park · 8:00 AM · 01 Aug</span></div></div>
+      <div class="row"><div class="dot">05</div><div class="m"><b>Public Grievance Meeting</b><span>T.Nagar Community Hall · 6:00 PM · 05 Aug</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CITIZEN: COMPLAINT ============ -->
+<section class="screen" id="c-complaint">
+  <div class="eyebrow">உங்கள் குறை, எங்கள் பொறுப்பு</div>
+  <h1 data-i18n="h_comp">Register your complaint</h1>
+  <p class="muted" style="margin-top:6px">You'll get a Complaint ID instantly. Track it anytime from the Track tab.</p>
+  <form id="fComplaint" onsubmit="return submitComplaint(event)">
+    <label class="f" style="display:flex;align-items:center;gap:10px;background:var(--brand-tint);border-radius:12px;padding:12px;margin-top:14px">
+      <input type="checkbox" id="cAnon" onchange="toggleAnon()" style="width:19px;height:19px;accent-color:var(--brand)">
+      <span>Submit anonymously <small style="display:block;font-weight:400">Your name &amp; number won't be recorded. Save your Complaint ID — it's the only way to track.</small></span>
+    </label>
+    <div id="identBlock">
+    <label class="f" data-i18n="f_name">Full name</label>
+    <input class="in" id="cName" required placeholder="Enter your full name">
+    <label class="f" data-i18n="f_phone">Mobile number</label>
+    <input class="in" id="cPhone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number">
+    </div>
+    <label class="f" data-i18n="f_ward">Ward</label>
+    <select class="in" id="cWard" required>
+      <option value="">Select ward</option>
+      <option>Ward 119</option><option>Ward 120</option><option>Ward 121</option>
+      <option>Ward 122</option><option>Ward 123</option>
+    </select>
+    <label class="f" data-i18n="f_cat">Category</label>
+    <select class="in" id="cCat" required>
+      <option value="">Select category</option>
+      <option>Roads &amp; Footpaths</option><option>Street Lights</option>
+      <option>Garbage &amp; Cleanliness</option><option>Water Supply</option>
+      <option>Electricity</option><option>Drainage</option><option>Others</option>
+    </select>
+    <label class="f" data-i18n="f_addr">Area / street &amp; landmark</label>
+    <input class="in" id="cAddr" required placeholder="Street, landmark">
+    <label class="f" data-i18n="f_desc">Description</label>
+    <textarea class="in" id="cDesc" required placeholder="Describe the issue in detail…" data-ph="ph_desc"></textarea>
+    <label class="f">Evidence <small>(optional — photo, video, voice note)</small></label>
+    <div class="attach">
+      <button type="button" class="a" id="aPhoto" onclick="cPhoto.click()"><span class="i">&#128247;</span>Photo</button>
+      <button type="button" class="a" id="aVideo" onclick="cVideo.click()"><span class="i">&#127909;</span>Video</button>
+      <button type="button" class="a" id="aVoice" onclick="toggleRec()"><span class="i">&#127908;</span><span id="aVoiceLbl">Voice note</span></button>
+    </div>
+    <input type="file" id="cPhoto" accept="image/*" capture="environment" class="hide" onchange="pickMedia('photo',this)">
+    <input type="file" id="cVideo" accept="video/*" capture="environment" class="hide" onchange="pickMedia('video',this)">
+    <div class="preview" id="cPreview"></div>
+    <label class="f">Location <small>(helps the field officer find the spot)</small></label>
+    <button type="button" class="btn ghost" style="margin-top:0" id="geoBtn" onclick="grabLocation()">&#128205; Use my current location</button>
+    <div id="geoOut"></div>
+    <button class="btn" type="submit" data-i18n="b_submit">Submit complaint &rarr;</button>
+  </form>
+  <div class="card hide" id="cDone" style="margin-top:16px;border-color:var(--ok);text-align:center">
+    <div class="bigcheck">&#10003;</div>
+    <div class="eyebrow" style="color:var(--ok)">Complaint received</div>
+    <h2 style="margin-top:6px">ID: <span id="cNewId"></span></h2>
+    <p class="muted" style="margin-top:6px" id="cDoneMsg">Assigned to the ward field officer. Average resolution: 2.3 days.</p>
+    <button class="btn ghost" onclick="go('c-track')">Track this complaint</button>
+  </div>
+</section>
+
+<!-- ============ CITIZEN: TRACK ============ -->
+<section class="screen" id="c-track">
+  <div class="eyebrow">நிலையை அறியவும்</div>
+  <h1 data-i18n="h_track">Track your complaint</h1>
+  <div class="chips" style="margin-top:14px">
+    <button class="chip on" onclick="trackMode('mine',this)">My complaint</button>
+    <button class="chip" onclick="trackMode('ward',this)">Ward view</button>
+  </div>
+  <div id="tMine" style="margin-top:12px">
+    <div style="display:flex;gap:8px">
+      <input class="in" id="tQuery" placeholder="Complaint ID or mobile number" data-ph="ph_track" style="flex:1">
+      <button class="btn" style="width:auto;margin:0;padding:12px 18px" onclick="trackNow()">Track</button>
+    </div>
+  </div>
+  <div id="tWard" class="hide" style="margin-top:12px">
+    <select class="in" id="wardSel" onchange="renderWardView()">
+      <option value="">Select your ward</option>
+      <option>Ward 119</option><option>Ward 120</option><option>Ward 121</option>
+      <option>Ward 122</option><option>Ward 123</option>
+    </select>
+    <div id="wardOut" class="stack" style="margin-top:14px"></div>
+  </div>
+  <div id="tResults" class="stack" style="margin-top:16px"></div>
+</section>
+
+<!-- ============ CITIZEN: EVENTS & GALLERY ============ -->
+<section class="screen" id="c-events">
+  <div class="eyebrow">Transformation showcase</div>
+  <h1 data-i18n="h_ev">Events &amp; development</h1>
+  <div class="chips" style="margin-top:14px">
+    <button class="chip on" onclick="evTab('ba',this)">Before / After</button>
+    <button class="chip" onclick="evTab('ev',this)">Events</button>
+    <button class="chip" onclick="evTab('rw',this)">Road works</button>
+    <button class="chip" onclick="evTab('mt',this)">Meetings</button>
+  </div>
+
+  <div class="stack evpane" id="ev-ba" style="margin-top:14px">
+    <div class="card">
+      <div class="ba"><div class="b4">BEFORE</div><div class="af">AFTER</div></div>
+      <b style="display:block;margin-top:10px;font-size:14px">Ranganathan Street Footpath</b>
+      <span class="muted">Completed 15 Jun 2026 · Ward 122</span>
+    </div>
+    <div class="card">
+      <div class="ba"><div class="b4">BEFORE</div><div class="af">AFTER</div></div>
+      <b style="display:block;margin-top:10px;font-size:14px">Panagal Park Renovation</b>
+      <span class="muted">Completed 02 May 2026 · Ward 121</span>
+    </div>
+    <div class="card">
+      <div class="ba"><div class="b4">BEFORE</div><div class="af">AFTER</div></div>
+      <b style="display:block;margin-top:10px;font-size:14px">Storm Water Drain Upgrade</b>
+      <span class="muted">Completed 20 Apr 2026 · Ward 123</span>
+    </div>
+    <div class="card">
+      <div class="ba"><div class="b4">BEFORE</div><div class="af">AFTER</div></div>
+      <b style="display:block;margin-top:10px;font-size:14px">Pondy Bazaar Street Lighting</b>
+      <span class="muted">Completed 05 Mar 2026 · Ward 121</span>
+    </div>
+  </div>
+
+  <div class="stack evpane hide" id="ev-ev" style="margin-top:14px">
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">10</div>
+      <div class="m"><b>Free Medical Camp</b><span>10 Aug 2026 · T.Nagar Community Hall</span></div></div>
+      <button class="btn ghost" onclick="toast('Reminder set for Free Medical Camp')">Remind me</button>
+    </div>
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">02</div>
+      <div class="m"><b>Green T.Nagar Drive</b><span>02 Aug 2026 · Panagal Park · saplings provided</span></div></div>
+      <button class="btn ghost" onclick="toast('Reminder set for Green T.Nagar Drive')">Remind me</button>
+    </div>
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">25</div>
+      <div class="m"><b>Youth Sports Meet</b><span>25 Aug 2026 · Natesan Park grounds</span></div></div>
+      <button class="btn ghost" onclick="toast('Reminder set for Youth Sports Meet')">Remind me</button>
+    </div>
+  </div>
+
+  <div class="stack evpane hide" id="ev-rw" style="margin-top:14px">
+    <div class="card">
+      <b style="font-size:14px">Ward Road Re-Carpeting — Ward 119</b>
+      <span class="muted" style="display:block;margin-top:3px">Phase 2 of 3 · GCC Roads</span>
+      <div class="pb"><i style="width:66%"></i></div>
+    </div>
+    <div class="card">
+      <b style="font-size:14px">Rainwater Harvesting Pits — Ward 120</b>
+      <span class="muted" style="display:block;margin-top:3px">42 of 60 pits done · pre-monsoon target</span>
+      <div class="pb"><i style="width:70%"></i></div>
+    </div>
+    <div class="card">
+      <b style="font-size:14px">Usman Road Duct Laying — Ward 122</b>
+      <span class="muted" style="display:block;margin-top:3px">Night works · expect diversions till 30 Jul</span>
+      <div class="pb"><i style="width:35%"></i></div>
+    </div>
+  </div>
+
+  <div class="stack evpane hide" id="ev-mt" style="margin-top:14px">
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">05</div>
+      <div class="m"><b>Public Grievance Meeting</b><span>05 Aug · 6:00 PM · Community Hall · open to all</span></div></div>
+      <button class="btn ghost" onclick="toast('Your slot request is registered')">Request a speaking slot</button>
+    </div>
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">18</div>
+      <div class="m"><b>Ward Grievance Day — Ward 121</b><span>18 Aug · 10 AM–1 PM · Ward office</span></div></div>
+    </div>
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">28</div>
+      <div class="m"><b>Monsoon Preparedness Review</b><span>28 Aug · residents' associations invited</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CITIZEN: VOLUNTEER ============ -->
+<section class="screen" id="c-volunteer">
+  <div class="eyebrow">இணைந்து பணியாற்றுங்கள்</div>
+  <h1 data-i18n="h_vol">Become a volunteer</h1>
+  <p class="muted" style="margin-top:6px">Join 512+ volunteers running welfare drives, medical camps and ward clean-ups across T.Nagar's 38 wards.</p>
+  <form onsubmit="return submitVolunteer(event)">
+    <label class="f">Full name</label>
+    <input class="in" required placeholder="Enter your full name">
+    <label class="f">Mobile number</label>
+    <input class="in" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number">
+    <label class="f">Ward / area</label>
+    <select class="in" required><option value="">Select ward</option>
+      <option>Ward 119</option><option>Ward 120</option><option>Ward 121</option>
+      <option>Ward 122</option><option>Ward 123</option></select>
+    <label class="f">Area of interest</label>
+    <select class="in" required><option value="">Select interest</option>
+      <option>Clean-up drives</option><option>Medical camps</option>
+      <option>Education support</option><option>Event management</option></select>
+    <label class="f">Availability</label>
+    <select class="in"><option>Weekends only</option><option>Weekdays</option><option>Flexible</option></select>
+    <button class="btn" type="submit">Register as volunteer &rarr;</button>
+  </form>
+</section>
+
+
+
+
+<!-- ============ CITIZEN: CHAT ASSISTANT ============ -->
+<section class="screen" id="c-chat">
+  <div class="eyebrow" data-i18n="e_chat">Guided help · வழிகாட்டி</div>
+  <h1 data-i18n="h_chat">Complaint assistant</h1>
+  <p class="muted" style="margin-top:6px" data-i18n="p_chat">Answer a few taps — no forms. You can speak your problem instead of typing.</p>
+  <div id="chatBox" style="margin-top:14px"></div>
+  <div class="qr-chips" id="chatQR"></div>
+  <div class="chat-in hide" id="chatInRow" style="margin-top:10px">
+    <input class="in" id="chatIn" placeholder="Type here…" data-ph="ph_chat">
+    <button class="btn send" onclick="chatSend()">&#10148;</button>
+  </div>
+</section>
+
+<!-- ============ CITIZEN: GOVT SERVICES ============ -->
+<section class="screen" id="c-services">
+  <div class="eyebrow">அரசு நிர்வாகம் · One tap away</div>
+  <h1 data-i18n="h_svc">Government services</h1>
+  <div class="stack" style="margin-top:14px">
+
+    <div class="card">
+      <h2 data-i18n="s_emg">Helplines — tap to call</h2>
+      <div class="emg" style="margin-top:10px">
+        <a href="tel:100"><b>100</b><span>Police</span></a>
+        <a href="tel:101"><b>101</b><span>Fire</span></a>
+        <a href="tel:108"><b>108</b><span>Ambulance</span></a>
+        <a href="tel:1913"><b>1913</b><span>GCC Civic</span></a>
+        <a href="tel:1100"><b>1100</b><span>CM Helpline</span></a>
+        <a href="tel:181"><b>181</b><span>Women</span></a>
+      </div>
+    </div>
+
+    <div class="card dir">
+      <h2 data-i18n="s_dir">Department directory</h2>
+      <div class="row"><div class="dot">&#127970;</div>
+        <div class="m"><b>GCC Zone 9 (Teynampet)</b><span>Roads, garbage, street lights, drains</span>
+        <a href="https://chennaicorporation.gov.in" target="_blank" rel="noopener">chennaicorporation.gov.in</a></div>
+        <a class="call" href="tel:1913">Call</a></div>
+      <div class="row"><div class="dot">&#128167;</div>
+        <div class="m"><b>CMWSSB (Metrowater)</b><span>Water supply &amp; sewerage</span>
+        <a href="https://chennaimetrowater.tn.gov.in" target="_blank" rel="noopener">chennaimetrowater.tn.gov.in</a></div>
+        <a class="call" href="tel:04445674567">Call</a></div>
+      <div class="row"><div class="dot">&#9889;</div>
+        <div class="m"><b>TANGEDCO — Minnagam</b><span>Power cuts, billing, new connections</span>
+        <a href="https://www.tnebnet.org" target="_blank" rel="noopener">tnebnet.org</a></div>
+        <a class="call" href="tel:9498794987">Call</a></div>
+      <div class="row"><div class="dot">&#128188;</div>
+        <div class="m"><b>Constituency Office, T.Nagar</b><span>MLA office · No. 123, T.Nagar Main Road</span></div>
+        <a class="call" href="tel:04412345678">Call</a></div>
+      <p class="muted" style="margin-top:8px">Verify numbers with the ward office before public launch.</p>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s_online">Pay &amp; apply online</h2>
+      <div class="grid2" style="margin-top:10px">
+        <a class="action" href="https://chennaicorporation.gov.in" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+          <div class="ic">&#127961;</div><b>Property tax</b><span>GCC online payment</span></a>
+        <a class="action" href="https://chennaimetrowater.tn.gov.in" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+          <div class="ic">&#128167;</div><b>Water tax</b><span>CMWSSB payment</span></a>
+        <a class="action" href="https://chennaicorporation.gov.in" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+          <div class="ic">&#128196;</div><b>Birth / death certificate</b><span>GCC civic services</span></a>
+        <a class="action" href="https://www.tnesevai.tn.gov.in" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+          <div class="ic">&#128736;</div><b>e-Sevai</b><span>All TN citizen services</span></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s_lad">If your complaint is stuck — escalation ladder</h2>
+      <ol class="ladder" style="margin-top:8px">
+        <li><div><b>Ward field officer</b><span>First 3 working days — via this app</span></div></li>
+        <li><div><b>Department AE / JE</b><span>Auto-forwarded by the ward office</span></div></li>
+        <li><div><b>Zonal Officer, Zone 9</b><span>Tap Escalate in your complaint tracker</span></div></li>
+        <li><div><b>1913 / CM Helpline 1100</b><span>Quote your Complaint ID</span></div></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s_faq">How this works</h2>
+      <details class="faq"><summary>Where does my complaint go?</summary>
+        <p>It's logged with an ID, reviewed at the ward office, and forwarded to the government department that owns the issue — GCC, Metrowater or TANGEDCO. You see every step in the tracker.</p></details>
+      <details class="faq"><summary>How long does resolution take?</summary>
+        <p>Average is 2.3 days. If nothing moves in 7 days, use Escalate in the tracker — it goes to the Zonal Officer with your evidence attached.</p></details>
+      <details class="faq"><summary>Is my phone number shared?</summary>
+        <p>Only with the ward office and the assigned field officer, for site visits and closure confirmation.</p></details>
+      <details class="faq"><summary>Can I complain without the app?</summary>
+        <p>Yes — call 1913 (GCC) or 1100 (CM Helpline) and quote the same issue. The app just makes tracking easier.</p></details>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s_set">App settings</h2>
+      <button class="btn ghost" style="margin-top:10px" onclick="document.body.classList.toggle('big');toast(document.body.classList.contains('big')?'Larger text on':'Larger text off')">Aa &nbsp;Toggle larger text</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CITIZEN: NOTIFICATIONS ============ -->
+<section class="screen" id="c-notifs">
+  <div class="eyebrow">Updates on your complaints</div>
+  <h1 data-i18n="h_not">Notifications</h1>
+  <div class="card" style="margin-top:14px" id="nList"></div>
+</section>
+
+<!-- ============ CADRE: CARD ============ -->
+<section class="screen" id="k-card">
+  <div class="stack">
+    <div class="mcard">
+      <div class="top">
+        <div><b>தமிழக வெற்றிக் கழகம்</b><span>Tamilaga Vettri Kazhagam · T.Nagar Unit</span></div>
+        <span style="font-size:10px;font-weight:800;background:rgba(255,255,255,.2);padding:4px 8px;border-radius:99px">ACTIVE</span>
+      </div>
+      <div class="mid">
+        <div class="nm" id="kName">R. Cadre Member</div>
+        <div class="id">TVK-TN-2026-08472 · Ward 122</div>
+      </div>
+      <div class="bot">
+        <div style="display:flex;gap:22px">
+          <div class="kv"><span>Since</span><b>Feb 2024</b></div>
+          <div class="kv"><span>Booth</span><b>122-B7</b></div>
+          <div class="kv"><span>Drives</span><b>14</b></div>
+        </div>
+        <div class="qr" aria-hidden="true">
+          <i></i><i class="o"></i><i></i><i></i><i class="o"></i>
+          <i class="o"></i><i></i><i class="o"></i><i></i><i></i>
+          <i></i><i class="o"></i><i></i><i class="o"></i><i></i>
+          <i></i><i></i><i class="o"></i><i></i><i class="o"></i>
+          <i class="o"></i><i></i><i></i><i class="o"></i><i></i>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="s"><b>14</b><span>Drives done</span></div>
+      <div class="s"><b>3</b><span>Tasks open</span></div>
+      <div class="s"><b>96</b><span>Doors visited</span></div>
+      <div class="s"><b>#8</b><span>Ward rank</span></div>
+    </div>
+    <div class="card">
+      <h2>This week's tasks</h2>
+      <div class="row"><div class="dot">1</div><div class="m"><b>Booth 122-B7 voter outreach</b><span>Target 40 households · due Fri</span></div><span class="badge prog">In progress</span></div>
+      <div class="row"><div class="dot">2</div><div class="m"><b>Clean drive volunteers</b><span>Recruit 5 for 25 Jul Mega Clean</span></div><span class="badge open">Open</span></div>
+      <div class="row"><div class="dot">3</div><div class="m"><b>Grievance day follow-ups</b><span>6 pending complaint escalations</span></div><span class="badge open">Open</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CADRE: CAMPAIGNS ============ -->
+<section class="screen" id="k-camp">
+  <div class="eyebrow">Ward 122 · Campaign progress</div>
+  <h1>Campaigns</h1>
+  <div class="stack" style="margin-top:14px">
+    <div class="card">
+      <b style="font-size:14px">Mega Clean Drive — 25 Jul</b>
+      <span class="muted" style="display:block;margin-top:3px">Volunteer sign-ups: 38 / 50</span>
+      <div class="pb"><i style="width:76%"></i></div>
+      <button class="btn ghost" onclick="toast('Shared drive link to WhatsApp group')">Share sign-up link</button>
+    </div>
+    <div class="card">
+      <b style="font-size:14px">Door-to-door outreach — Booths B5–B8</b>
+      <span class="muted" style="display:block;margin-top:3px">Households covered: 412 / 600</span>
+      <div class="pb"><i style="width:69%"></i></div>
+    </div>
+    <div class="card">
+      <b style="font-size:14px">Membership drive — July</b>
+      <span class="muted" style="display:block;margin-top:3px">New members: 57 / 100</span>
+      <div class="pb"><i style="width:57%"></i></div>
+      <button class="btn ghost" onclick="toast('Member enrolment form opened')">Enrol a new member</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CADRE: EVENTS ============ -->
+<section class="screen" id="k-events">
+  <div class="eyebrow">Duty roster</div>
+  <h1>Party events</h1>
+  <div class="stack" style="margin-top:14px">
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">25</div>
+        <div class="m"><b>Mega Clean Drive</b><span>T.Nagar Main Road · 7:00 AM · report to booth agent</span></div></div>
+      <button class="btn gold" onclick="toast('Checked in — attendance marked ✓')">Check in for duty</button>
+    </div>
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">05</div>
+        <div class="m"><b>Public Grievance Meeting</b><span>Community Hall · 6:00 PM · crowd &amp; queue support</span></div></div>
+    </div>
+    <div class="card">
+      <div class="row" style="border:0;padding:0"><div class="dot">18</div>
+        <div class="m"><b>Ward committee review</b><span>Ward office · 5:30 PM · booth reports due</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ADMIN: DASHBOARD ============ -->
+<section class="screen" id="a-dash">
+  <div class="eyebrow">Ward operations</div>
+  <h1>Dashboard</h1>
+  <div class="stack" style="margin-top:14px">
+    <div class="stats">
+      <div class="s"><b id="aTotal">1,284</b><span>Total</span></div>
+      <div class="s"><b id="aDone">946</b><span>Resolved</span></div>
+      <div class="s"><b id="aProg">338</b><span>Open</span></div>
+      <div class="s"><b>512</b><span>Volunteers</span></div>
+    </div>
+    <div class="card">
+      <h2>Complaints — last 7 days</h2>
+      <div class="bars">
+        <div class="b"><i style="height:55%"></i>Mon</div>
+        <div class="b"><i style="height:80%"></i>Tue</div>
+        <div class="b"><i style="height:40%"></i>Wed</div>
+        <div class="b"><i style="height:92%"></i>Thu</div>
+        <div class="b"><i style="height:62%"></i>Fri</div>
+        <div class="b"><i style="height:35%"></i>Sat</div>
+        <div class="b"><i style="height:70%"></i>Sun</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Ward-wise open issues</h2>
+      <div id="wardBars"></div>
+    </div>
+    <div class="card">
+      <h2>Most-backed open issues</h2>
+      <div id="hotList"></div>
+    </div>
+    <div class="card">
+      <h2>Category split</h2>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px"><b>Water Supply</b><span>32%</span></div>
+        <div class="pb"><i style="width:32%"></i></div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px"><b>Road &amp; Infra</b><span>27%</span></div>
+        <div class="pb"><i style="width:27%"></i></div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px"><b>Sanitation</b><span>22%</span></div>
+        <div class="pb"><i style="width:22%"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ADMIN: QUEUE ============ -->
+<section class="screen" id="a-queue">
+  <div class="eyebrow">Assign · update · close</div>
+  <h1>Complaint queue</h1>
+  <div class="chips" style="margin-top:14px">
+    <button class="chip on" onclick="filterQ('all',this)">All</button>
+    <button class="chip" onclick="filterQ('Open',this)">Open</button>
+    <button class="chip" onclick="filterQ('In Progress',this)">In progress</button>
+    <button class="chip" onclick="filterQ('Resolved',this)">Resolved</button>
+  </div>
+  <div class="chips" style="margin-top:8px" id="wardChips">
+    <button class="chip on" onclick="filterW('all',this)">All wards</button>
+    <button class="chip" onclick="filterW('Ward 119',this)">119</button>
+    <button class="chip" onclick="filterW('Ward 120',this)">120</button>
+    <button class="chip" onclick="filterW('Ward 121',this)">121</button>
+    <button class="chip" onclick="filterW('Ward 122',this)">122</button>
+    <button class="chip" onclick="filterW('Ward 123',this)">123</button>
+  </div>
+  <div class="card" style="margin-top:14px" id="aList"></div>
+</section>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="bar hide" id="nav"></nav>
+
+<script>
+/* ---------- safe storage (memory fallback) ---------- */
+const mem = {};
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)) ?? mem[k] ?? null }catch(e){ return mem[k] ?? null } },
+  set(k,v){ mem[k]=v; try{ localStorage.setItem(k,JSON.stringify(v)) }catch(e){} }
+};
+
+/* ---------- IndexedDB for media blobs ---------- */
+let idb=null;
+const idbReady = new Promise(res=>{
+  try{
+    const rq=indexedDB.open('tvk_media',1);
+    rq.onupgradeneeded=e=>e.target.result.createObjectStore('m');
+    rq.onsuccess=e=>{idb=e.target.result;res(true)};
+    rq.onerror=()=>res(false);
+  }catch(e){res(false)}
+});
+const mput=(k,blob)=>new Promise(r=>{ if(!idb)return r(false);
+  const tx=idb.transaction('m','readwrite'); tx.objectStore('m').put(blob,k);
+  tx.oncomplete=()=>r(true); tx.onerror=()=>r(false); });
+const mget=k=>new Promise(r=>{ if(!idb)return r(null);
+  const rq=idb.transaction('m').objectStore('m').get(k);
+  rq.onsuccess=()=>r(rq.result||null); rq.onerror=()=>r(null); });
+
+/* ---------- department mapping (Chennai authorities) ---------- */
+const DEPTS={
+ 'Roads & Footpaths':'GCC — Bus Route Roads / Highways Dept',
+ 'Street Lights':'GCC — Electrical (Street Lighting) Dept',
+ 'Garbage & Cleanliness':'GCC — Solid Waste Management (SWM)',
+ 'Water Supply':'CMWSSB (Metrowater) — Area Engineer',
+ 'Electricity':'TANGEDCO — T.Nagar Section Office',
+ 'Drainage':'CMWSSB — Sewerage Maintenance',
+ 'Others':'Constituency Office — General Desk'
+};
+
+/* ---------- seed data ---------- */
+const seed = [
+  {id:'TN-2026-004821',name:'Ramesh Kumar',phone:'9840012345',cat:'Water Supply',ward:'Ward 122',date:'28 Jun 2026',status:'In Progress',
+   dept:'CMWSSB (Metrowater) — Area Engineer',geo:{lat:13.0418,lng:80.2341,acc:12},media:{},feedback:null,rating:0,votes:12,
+   steps:[['Complaint received','28 Jun, 10:14 AM',1],['Forwarded to CMWSSB (Metrowater)','28 Jun, 2:00 PM',1],['Site inspection completed','01 Jul, 4:30 PM',1],['Resolution & closure','Pending',0]]},
+  {id:'TN-2026-004820',name:'Lakshmi Priya',phone:'9840054321',cat:'Street Lights',ward:'Ward 121',date:'27 Jun 2026',status:'Open',
+   dept:null,geo:null,media:{},feedback:null,rating:0,votes:5,
+   steps:[['Complaint received','27 Jun, 6:40 PM',1],['Forward to department','Pending',0],['Site inspection','Pending',0],['Resolution & closure','Pending',0]]},
+  {id:'TN-2026-004819',name:'Suresh Babu',phone:'9840099887',cat:'Roads & Footpaths',ward:'Ward 123',date:'26 Jun 2026',status:'Resolved',
+   dept:'GCC — Bus Route Roads / Highways Dept',geo:null,media:{},rating:5,votes:3,
+   feedback:{msg:'Pothole patched and re-carpeted on 29 Jun. Please rate the resolution.',at:'29 Jun, 5:45 PM'},
+   steps:[['Complaint received','26 Jun, 8:15 AM',1],['Forwarded to GCC Roads','26 Jun, 11:00 AM',1],['Site inspection completed','27 Jun, 3:10 PM',1],['Resolved & closed','29 Jun, 5:45 PM',1]]}
+];
+let complaints = store.get('tvk_complaints_v2') || seed;
+const save = () => store.set('tvk_complaints_v2', complaints);
+
+/* ---------- notifications ---------- */
+let notifs = store.get('tvk_notifs') || [
+  {msg:'TN-2026-004821 forwarded to CMWSSB (Metrowater)', at:'28 Jun', read:true},
+  {msg:'Feedback received on TN-2026-004819 — please rate', at:'29 Jun', read:false}
+];
+function pushNotif(msg){
+  notifs.unshift({msg, at:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'}), read:false});
+  store.set('tvk_notifs',notifs); renderBell();
+}
+function renderBell(){
+  const n=notifs.filter(x=>!x.read).length;
+  const ct=document.getElementById('bellCt');
+  ct.textContent=n; ct.classList.toggle('hide',!n);
+}
+function renderNotifs(){
+  document.getElementById('nList').innerHTML = notifs.length ? notifs.map(n=>
+    `<div class="row"><div class="dot">&#128276;</div><div class="m"><b style="font-weight:${n.read?500:800}">${n.msg}</b><span>${n.at}</span></div></div>`
+  ).join('') : '<p class="muted">No updates yet. Notifications appear when your complaint moves.</p>';
+  notifs.forEach(n=>n.read=true); store.set('tvk_notifs',notifs); renderBell();
+}
+
+
+/* ---------- i18n (EN / Tamil) ---------- */
+const L={
+ en:{nav_home:'Home',nav_comp:'Complaint',nav_track:'Track',nav_ev:'Events',nav_svc:'Services',
+     nav_card:'My card',nav_camp:'Campaigns',nav_kev:'Events',nav_dash:'Dashboard',nav_q:'Queue',
+     switch:'Switch role',h_home:'Better T.Nagar',h_comp:'Register your complaint',h_track:'Track your complaint',
+     h_ev:'Events & development',h_vol:'Become a volunteer',h_not:'Notifications',h_svc:'Government services',
+     b_submit:'Submit complaint →',f_name:'Full name',f_phone:'Mobile number',f_ward:'Ward',f_cat:'Category',f_addr:'Area / street & landmark',f_desc:'Description',a_comp:'Raise a complaint',a_comp2:'Roads, water, garbage, lights & more',a_track:'Track status',a_track2:'By complaint ID or phone',a_ev:'Events & gallery',a_ev2:'Before/after works, ward drives',a_vol:'Volunteer',a_vol2:'Join 512+ active volunteers',a_chat:'Need help? Just chat',a_chat2:'The assistant files your complaint for you — Tamil or English, speak or tap',ph_chat:'Type here…',ph_track:'Complaint ID or mobile number',ph_desc:'Describe the issue in detail…',h_chat:'Complaint assistant',e_chat:'Guided help',p_chat:'Answer a few taps — no forms. You can speak your problem instead of typing.',s_emg:'Helplines — tap to call',s_dir:'Department directory',
+     s_online:'Pay & apply online',s_lad:'If your complaint is stuck — escalation ladder',
+     s_faq:'How this works',s_set:'App settings',b_esc:'Escalate to Zonal Officer'},
+ ta:{nav_home:'முகப்பு',nav_comp:'புகார்',nav_track:'நிலை',nav_ev:'நிகழ்வுகள்',nav_svc:'சேவைகள்',
+     nav_card:'என் அட்டை',nav_camp:'இயக்கங்கள்',nav_kev:'நிகழ்வுகள்',nav_dash:'டாஷ்போர்டு',nav_q:'வரிசை',
+     switch:'பங்கு மாற்று',h_home:'சிறந்த தி.நகர்',h_comp:'புகார் பதிவு செய்யுங்கள்',h_track:'புகார் நிலை அறியவும்',
+     h_ev:'நிகழ்வுகள் & மேம்பாடு',h_vol:'தன்னார்வலர் ஆகுங்கள்',h_not:'அறிவிப்புகள்',h_svc:'அரசு சேவைகள்',
+     b_submit:'புகாரை சமர்ப்பிக்கவும் →',f_name:'முழு பெயர்',f_phone:'கைபேசி எண்',f_ward:'வார்டு',f_cat:'வகை',f_addr:'பகுதி / தெரு & அடையாளம்',f_desc:'புகார் விவரம்',a_comp:'புகார் அளிக்க',a_comp2:'சாலை, தண்ணீர், குப்பை, விளக்குகள்',a_track:'நிலை அறிய',a_track2:'புகார் எண் அல்லது கைபேசி எண்',a_ev:'நிகழ்வுகள் & படங்கள்',a_ev2:'முன்/பின் பணிகள், வார்டு இயக்கங்கள்',a_vol:'தன்னார்வலர்',a_vol2:'512+ தன்னார்வலர்களுடன் இணையுங்கள்',a_chat:'உதவி வேண்டுமா? பேசுங்கள்',a_chat2:'உதவியாளர் உங்களுக்காக புகாரை பதிவு செய்யும் — தமிழ் அல்லது ஆங்கிலம், பேசலாம் அல்லது தட்டலாம்',ph_chat:'இங்கே தட்டச்சு செய்யவும்…',ph_track:'புகார் எண் அல்லது கைபேசி எண்',ph_desc:'பிரச்சனையை விரிவாக விவரிக்கவும்…',h_chat:'புகார் உதவியாளர்',e_chat:'வழிகாட்டி உதவி',p_chat:'சில தட்டல்கள் போதும் — படிவம் தேவையில்லை. தட்டச்சு செய்யாமல் பேசியும் சொல்லலாம்.',s_emg:'உதவி எண்கள் — அழைக்க தட்டவும்',s_dir:'துறை முகவரி நூல்',
+     s_online:'ஆன்லைனில் செலுத்த / விண்ணப்பிக்க',s_lad:'புகார் நகரவில்லையா? — மேல்முறையீடு படிகள்',
+     s_faq:'இது எப்படி செயல்படுகிறது',s_set:'அமைப்புகள்',b_esc:'மண்டல அலுவலருக்கு மேல்முறையீடு'}
+};
+let lang = store.get('tvk_lang') || 'en';
+const T = k => (L[lang][k] || L.en[k] || k);
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.dataset.i18n;
+    if(k==='h_home'){ el.innerHTML = lang==='ta' ? 'சிறந்த <span class="gold">தி.நகர்</span>' : 'Better <span class="gold">T.Nagar</span>'; return; }
+    el.textContent=T(k);
+  });
+  document.querySelectorAll('[data-ph]').forEach(el=>{ el.placeholder=T(el.dataset.ph); });
+  document.getElementById('langBtn').textContent = lang==='ta' ? 'EN' : 'தமிழ்';
+  document.documentElement.lang = lang==='ta' ? 'ta' : 'en';
+}
+function toggleLang(){
+  setLang(lang==='en' ? 'ta' : 'en');
+  if(cur==='c-chat'){
+    const l=lang;
+    document.getElementById('chatBox').innerHTML='';
+    document.getElementById('chatQR').innerHTML='';
+    chat={step:null,data:{},voice:null};
+    botSay(B('hi'),[[B('start'),askAnon]]);
+  }
+  toast(lang==='ta' ? 'மொழி: தமிழ்' : 'Language: English');
+}
+
+/* ---------- roles & nav ---------- */
+const NAVS = {
+  citizen:[['c-home','&#8962;','nav_home'],['c-complaint','&#128221;','nav_comp'],['c-track','&#128269;','nav_track'],['c-events','&#127917;','nav_ev'],['c-services','&#127963;','nav_svc']],
+  cadre:[['k-card','&#127183;','nav_card'],['k-camp','&#9873;','nav_camp'],['k-events','&#128197;','nav_kev']],
+  admin:[['a-dash','&#128200;','nav_dash'],['a-queue','&#128203;','nav_q']]
+};
+const SUBS = {citizen:'Citizen · குடிமகன்', cadre:'TVK Cadre · Ward 122', admin:'Ward Admin'};
+let role='citizen', cur='';
+
+function setRole(r){
+  role=r; document.body.dataset.role=r;
+  document.getElementById('splash').classList.add('hide');
+  document.getElementById('hdr').classList.remove('hide');
+  document.getElementById('bellBtn').classList.toggle('hide', r!=='citizen');
+  const nav=document.getElementById('nav');
+  nav.classList.remove('hide');
+  nav.innerHTML = NAVS[r].map(([id,ic,lb])=>
+    `<button data-s="${id}" onclick="go('${id}')"><span class="i">${ic}</span>${T(lb)}</button>`).join('');
+  document.getElementById('hdrSub').textContent = SUBS[r];
+  document.querySelector('meta[name=theme-color]').content =
+    r==='citizen' ? '#B71C1C' : r==='admin' ? '#5C1A1D' : '#8B1418';
+  go(NAVS[r][0][0]);
+  if(r==='admin') renderQueue('all');
+  renderBell();
+  applyLang();
+  store.set('tvk_role', r);
+}
+function showSplash(){ document.getElementById('splash').classList.remove('hide'); }
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  document.querySelectorAll('nav.bar button').forEach(b=>b.classList.toggle('on', b.dataset.s===id));
+  cur=id; window.scrollTo(0,0);
+  if(id==='c-notifs') renderNotifs();
+  if(id==='c-home'){ countUp(document.getElementById('stTotal'),'1,284'); countUp(document.getElementById('stDone'),'946'); }
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2600);
+}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- attachments: pick / record ---------- */
+const pending={photo:null,video:null,voice:null};
+function pickMedia(kind,input){
+  const f=input.files[0]; if(!f) return;
+  if(kind==='video' && f.size>25*1024*1024){ toast('Video too large — keep under 25 MB'); input.value=''; return; }
+  pending[kind]=f;
+  document.getElementById(kind==='photo'?'aPhoto':'aVideo').classList.add('ok');
+  renderPreview();
+}
+let rec=null, chunks=[];
+async function toggleRec(){
+  const btn=document.getElementById('aVoice'), lbl=document.getElementById('aVoiceLbl');
+  if(rec && rec.state==='recording'){ rec.stop(); return; }
+  if(!navigator.mediaDevices?.getUserMedia){ toast('Mic needs HTTPS — record works after deploy'); return; }
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    chunks=[]; rec=new MediaRecorder(stream);
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=()=>{
+      pending.voice=new Blob(chunks,{type:rec.mimeType||'audio/webm'});
+      stream.getTracks().forEach(t=>t.stop());
+      btn.classList.remove('rec'); btn.classList.add('ok'); lbl.textContent='Voice added';
+      renderPreview();
+    };
+    rec.start(); btn.classList.add('rec'); lbl.textContent='Stop recording';
+    toast('Recording… tap again to stop');
+  }catch(e){ toast('Mic permission denied'); }
+}
+function renderPreview(){
+  const box=document.getElementById('cPreview'); box.innerHTML='';
+  if(pending.photo){ const i=document.createElement('img'); i.src=URL.createObjectURL(pending.photo); i.alt='Photo evidence'; box.appendChild(i); }
+  if(pending.video){ const v=document.createElement('video'); v.src=URL.createObjectURL(pending.video); v.controls=true; box.appendChild(v); }
+  if(pending.voice){ const a=document.createElement('audio'); a.src=URL.createObjectURL(pending.voice); a.controls=true; box.appendChild(a); }
+}
+
+/* ---------- location ---------- */
+let pendingGeo=null;
+function grabLocation(){
+  const out=document.getElementById('geoOut');
+  if(!navigator.geolocation){ toast('Location not supported on this browser'); return; }
+  document.getElementById('geoBtn').textContent='Locating…';
+  navigator.geolocation.getCurrentPosition(p=>{
+    pendingGeo={lat:+p.coords.latitude.toFixed(5),lng:+p.coords.longitude.toFixed(5),acc:Math.round(p.coords.accuracy)};
+    out.innerHTML=`<div class="geo">&#128205; ${pendingGeo.lat}, ${pendingGeo.lng} (±${pendingGeo.acc} m)
+      <a href="https://maps.google.com/?q=${pendingGeo.lat},${pendingGeo.lng}" target="_blank" rel="noopener">Open map</a></div>`;
+    document.getElementById('geoBtn').textContent='📍 Location attached ✓';
+  },err=>{
+    document.getElementById('geoBtn').textContent='📍 Use my current location';
+    toast(err.code===1?'Location permission denied':'Location needs HTTPS — works after deploy');
+  },{enableHighAccuracy:true,timeout:10000});
+}
+
+
+function toggleAnon(){
+  const on=document.getElementById('cAnon').checked;
+  document.getElementById('identBlock').classList.toggle('hide',on);
+  cName.required=!on; cPhone.required=!on;
+}
+function shareApp(){
+  const url=location.href.startsWith('http')?location.href:'(host on GitHub Pages first, then share that link)';
+  const text='TVK T.Nagar app — raise & track civic complaints: '+url;
+  if(navigator.share && location.href.startsWith('http')){ navigator.share({title:'TVK T.Nagar',text,url:location.href}).catch(()=>{}); }
+  else window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+}
+
+
+
+/* ---------- micro-interactions ---------- */
+function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||12); }catch(e){} }
+document.addEventListener('click',e=>{ if(e.target.closest('button')) buzz(8); },{passive:true});
+function countUp(el,target){
+  const n=parseInt(String(target).replace(/[^0-9]/g,''))||0;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=target; return; }
+  const t0=performance.now(), dur=800;
+  function tick(t){ const p=Math.min((t-t0)/dur,1);
+    el.textContent=Math.round(n*(1-Math.pow(1-p,3))).toLocaleString('en-IN');
+    if(p<1) requestAnimationFrame(tick); else el.textContent=target; }
+  requestAnimationFrame(tick);
+}
+
+/* ---------- guided complaint assistant ---------- */
+const BOT={
+ en:{hi:"Vanakkam! I'm the T.Nagar assistant. I'll file your complaint — just tap or speak. Shall we start?",
+     start:"Start",anonq:"Do you want to give your name, or stay anonymous?",named:"Give my details",anon:"Stay anonymous",
+     askname:"What's your name?",askphone:"Your 10-digit mobile number? (for SMS updates)",
+     askward:"Which ward is the problem in?",dontknow:"I don't know my ward",
+     wardhelp:"No problem — tell me the street name in the description and the office will map the ward.",
+     askcat:"What kind of problem is it?",askdesc:"Describe the problem — type below, or tap 🎤 to speak it.",
+     speak:"🎤 Speak instead",askgeo:"Share your location so the officer finds the exact spot?",
+     yes:"Yes, share location",skip:"Skip",confirm:"Ready to submit?",submit:"Submit complaint",restart:"Start over",
+     done:"Done! Your complaint ID is ",done2:". Save it — you can track it anytime in the Track tab.",
+     track:"Track it now",invalid:"That doesn't look right — please try again.",listening:"Listening… tap Stop when finished.",stop:"⏹ Stop recording",voiceok:"Voice note attached ✓"},
+ ta:{hi:"வணக்கம்! நான் தி.நகர் உதவியாளர். உங்கள் புகாரை நான் பதிவு செய்கிறேன் — தட்டுங்கள் அல்லது பேசுங்கள். தொடங்கலாமா?",
+     start:"தொடங்கு",anonq:"உங்கள் பெயரை தர விரும்புகிறீர்களா, அல்லது அடையாளம் காட்டாமல் இருக்கவா?",
+     named:"என் விவரங்களை தருகிறேன்",anon:"அடையாளம் வேண்டாம்",
+     askname:"உங்கள் பெயர் என்ன?",askphone:"உங்கள் 10-இலக்க கைபேசி எண்? (SMS புதுப்பிப்புகளுக்கு)",
+     askward:"பிரச்சனை எந்த வார்டில் உள்ளது?",dontknow:"எனக்கு வார்டு தெரியாது",
+     wardhelp:"பரவாயில்லை — விவரத்தில் தெரு பெயரை சொல்லுங்கள், அலுவலகம் வார்டை கண்டறியும்.",
+     askcat:"என்ன வகையான பிரச்சனை?",askdesc:"பிரச்சனையை விவரிக்கவும் — கீழே தட்டச்சு செய்யவும், அல்லது 🎤 தட்டி பேசவும்.",
+     speak:"🎤 பேசுகிறேன்",askgeo:"அதிகாரி சரியான இடத்தை கண்டறிய உங்கள் இருப்பிடத்தை பகிரவா?",
+     yes:"ஆம், இருப்பிடம் பகிர்",skip:"தவிர்",confirm:"சமர்ப்பிக்க தயாரா?",submit:"புகாரை சமர்ப்பி",restart:"மீண்டும் தொடங்கு",
+     done:"முடிந்தது! உங்கள் புகார் எண் ",done2:". இதை சேமியுங்கள் — நிலை தாவலில் எப்போதும் கண்காணிக்கலாம்.",
+     track:"இப்போதே கண்காணி",invalid:"சரியாக இல்லை — மீண்டும் முயற்சிக்கவும்.",listening:"கேட்கிறேன்… முடிந்ததும் நிறுத்து தட்டவும்.",stop:"⏹ நிறுத்து",voiceok:"குரல் குறிப்பு இணைக்கப்பட்டது ✓"}
+};
+const B=k=>BOT[lang][k]||BOT.en[k];
+let chat={step:null,data:{},voice:null};
+function startChat(){ go('c-chat'); chat={step:null,data:{},voice:null};
+  document.getElementById('chatBox').innerHTML='';
+  document.getElementById('chatInRow').classList.add('hide');
+  botSay('மொழியை தேர்வு செய்யவும் · Choose your language',
+    [['தமிழ்',()=>{ setLang('ta'); botSay(B('hi'),[[B('start'),askAnon]]); }],
+     ['English',()=>{ setLang('en'); botSay(B('hi'),[[B('start'),askAnon]]); }]]);
+}
+function setLang(l){ lang=l; store.set('tvk_lang',l); applyLang();
+  if(role){ const nav=document.getElementById('nav');
+    nav.innerHTML = NAVS[role].map(([id,ic,lb])=>
+      `<button data-s="${id}" onclick="go('${id}')" class="${cur===id?'on':''}"><span class="i">${ic}</span>${T(lb)}</button>`).join(''); }
+}
+function botSay(txt,chips){
+  const box=document.getElementById('chatBox');
+  const d=document.createElement('div'); d.className='msg bot'; d.textContent=txt; box.appendChild(d);
+  const qr=document.getElementById('chatQR'); qr.innerHTML='';
+  (chips||[]).forEach(([lb,fn])=>{ const b=document.createElement('button'); b.textContent=lb;
+    b.onclick=()=>{ meSay(lb); qr.innerHTML=''; fn(); }; qr.appendChild(b); });
+  document.getElementById('chatInRow').classList.toggle('hide', !!chips&&chips.length>0);
+  d.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function meSay(txt){
+  const box=document.getElementById('chatBox');
+  const d=document.createElement('div'); d.className='msg me'; d.textContent=txt; box.appendChild(d);
+  d.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function chatSend(){
+  const inp=document.getElementById('chatIn'); const v=inp.value.trim(); if(!v) return;
+  inp.value=''; meSay(v); handleText(v);
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&document.activeElement?.id==='chatIn') chatSend(); });
+function handleText(v){
+  if(chat.step==='name'){ chat.data.name=v; askPhone(); }
+  else if(chat.step==='phone'){
+    if(!/^[0-9]{10}$/.test(v)){ botSay(B('invalid')); return; }
+    chat.data.phone=v; askWard(); }
+  else if(chat.step==='desc'){ chat.data.desc=v; askGeo(); }
+}
+function askAnon(){ botSay(B('anonq'),[[B('named'),()=>askName()],[B('anon'),()=>{chat.data.anon=true;askWard();}]]); }
+function askName(){ chat.step='name'; botSay(B('askname')); }
+function askPhone(){ chat.step='phone'; botSay(B('askphone')); }
+function askWard(){
+  chat.step='ward';
+  const wards=['Ward 119','Ward 120','Ward 121','Ward 122','Ward 123'];
+  botSay(B('askward'), wards.map(w=>[w,()=>{chat.data.ward=w;askCat();}]).concat([[B('dontknow'),()=>{chat.data.ward='Ward 122';botSay(B('wardhelp'));setTimeout(askCat,600);}]]));
+}
+function askCat(){
+  chat.step='cat';
+  const cats=['Roads & Footpaths','Street Lights','Garbage & Cleanliness','Water Supply','Electricity','Drainage','Others'];
+  const catTA={'Roads & Footpaths':'சாலைகள்','Street Lights':'தெரு விளக்குகள்','Garbage & Cleanliness':'குப்பை','Water Supply':'குடிநீர்','Electricity':'மின்சாரம்','Drainage':'வடிகால்','Others':'மற்றவை'};
+  botSay(B('askcat'), cats.map(c=>[lang==='ta'?catTA[c]:c,()=>{chat.data.cat=c;askDesc();}]));
+}
+function askDesc(){
+  chat.step='desc';
+  botSay(B('askdesc'),[[B('speak'),chatVoice]]);
+  document.getElementById('chatInRow').classList.remove('hide');
+}
+async function chatVoice(){
+  if(!navigator.mediaDevices?.getUserMedia){ botSay('🎤 needs HTTPS — works after deploy. Please type instead.'); document.getElementById('chatInRow').classList.remove('hide'); return; }
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const chunksC=[]; const r=new MediaRecorder(stream);
+    r.ondataavailable=e=>chunksC.push(e.data);
+    r.onstop=()=>{ chat.voice=new Blob(chunksC,{type:r.mimeType||'audio/webm'});
+      stream.getTracks().forEach(t=>t.stop());
+      chat.data.desc=chat.data.desc||'[Voice note attached]';
+      meSay(B('voiceok')); askGeo(); };
+    r.start(); botSay(B('listening'),[[B('stop'),()=>r.stop()]]);
+  }catch(e){ botSay(B('invalid')); document.getElementById('chatInRow').classList.remove('hide'); }
+}
+function askGeo(){
+  chat.step='geo';
+  document.getElementById('chatInRow').classList.add('hide');
+  botSay(B('askgeo'),[[B('yes'),()=>{
+    if(!navigator.geolocation){ chatConfirm(); return; }
+    navigator.geolocation.getCurrentPosition(p=>{
+      chat.data.geo={lat:+p.coords.latitude.toFixed(5),lng:+p.coords.longitude.toFixed(5),acc:Math.round(p.coords.accuracy)};
+      meSay('📍 '+chat.data.geo.lat+', '+chat.data.geo.lng); chatConfirm();
+    },()=>{ botSay('📍 needs HTTPS/permission — skipping.'); chatConfirm(); },{timeout:8000});
+  }],[B('skip'),chatConfirm]]);
+}
+function chatConfirm(){
+  const d=chat.data;
+  const sum=(d.anon?'Anonymous':d.name)+' · '+(d.ward||'')+' · '+(d.cat||'')+(d.geo?' · 📍':'')+(chat.voice?' · 🎤':'');
+  botSay(B('confirm')+'  ('+sum+')',[[B('submit'),chatSubmit],[B('restart'),startChat]]);
+}
+async function chatSubmit(){
+  const d=chat.data;
+  const num=4821+complaints.length; const id='TN-2026-00'+num;
+  const now=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const media={};
+  await idbReady;
+  if(chat.voice){ const ok=await mput(id+'_voice',chat.voice); if(ok) media.voice=true; }
+  complaints.unshift({id,anon:!!d.anon,name:d.anon?'Anonymous':(d.name||'Citizen'),phone:d.anon?'':(d.phone||''),
+    cat:d.cat||'Others',ward:d.ward||'Ward 122',date:now,status:'Open',dept:null,geo:d.geo||null,media,
+    feedback:null,rating:0,votes:0,
+    steps:[['Complaint received (via assistant)',now,1],['Forward to department','Pending',0],['Site inspection','Pending',0],['Resolution & closure','Pending',0]],
+    desc:d.desc||''});
+  save(); pushNotif(id+' filed via assistant');
+  botSay(B('done')+id+B('done2'),[[B('track'),()=>{go('c-track');document.getElementById('tQuery').value=id;trackNow();}],[B('restart'),startChat]]);
+}
+
+/* ---------- citizen: complaint submit ---------- */
+async function submitComplaint(e){
+  e.preventDefault();
+  const num = 4821 + complaints.length;
+  const id = 'TN-2026-00'+num;
+  const now = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const media={};
+  await idbReady;
+  for(const k of ['photo','video','voice']){
+    if(pending[k]){ const ok=await mput(id+'_'+k, pending[k]); if(ok) media[k]=true; }
+  }
+  const anon=document.getElementById('cAnon').checked;
+  complaints.unshift({
+    id, anon, name:anon?'Anonymous':cName.value, phone:anon?'':cPhone.value, cat:cCat.value, ward:cWard.value, date:now, status:'Open',
+    dept:null, geo:pendingGeo, media, feedback:null, rating:0, votes:0,
+    steps:[['Complaint received', now+' — confirmation sent',1],['Forward to department','Pending',0],
+           ['Site inspection','Pending',0],['Resolution & closure','Pending',0]]
+  });
+  save();
+  pushNotif(id+' registered — suggested dept: '+(DEPTS[cCat.value]||'General Desk'));
+  document.getElementById('cNewId').textContent=id;
+  document.getElementById('cDoneMsg').textContent = anon
+    ? 'Anonymous complaint logged. WRITE DOWN THIS ID — it is your only way to track or reopen it.'
+    : 'Assigned to the ward field officer. SMS & email confirmation sent. Average resolution: 2.3 days.';
+  document.getElementById('cDone').classList.remove('hide');
+  document.getElementById('fComplaint').reset();
+  Object.keys(pending).forEach(k=>pending[k]=null); pendingGeo=null;
+  document.getElementById('cPreview').innerHTML=''; document.getElementById('geoOut').innerHTML='';
+  ['aPhoto','aVideo','aVoice'].forEach(i=>document.getElementById(i).classList.remove('ok'));
+  document.getElementById('aVoiceLbl').textContent='Voice note';
+  document.getElementById('geoBtn').textContent='📍 Use my current location';
+  document.getElementById('cAnon').checked=false; toggleAnon();
+  document.getElementById('cDone').scrollIntoView({behavior:'smooth'});
+  buzz([30,40,30]);
+  toast('Complaint '+id+' registered');
+  return false;
+}
+function submitVolunteer(e){
+  e.preventDefault(); e.target.reset();
+  toast('Registered! The ward office will call you.');
+  return false;
+}
+
+/* ---------- attachments render helper ---------- */
+async function attachHTML(c, mountId){
+  const mount=document.getElementById(mountId); if(!mount) return;
+  await idbReady;
+  for(const k of ['photo','video','voice']){
+    if(!c.media || !c.media[k]) continue;
+    const blob=await mget(c.id+'_'+k); if(!blob) continue;
+    const url=URL.createObjectURL(blob);
+    let el;
+    if(k==='photo'){ el=document.createElement('img'); el.src=url; el.alt='Photo evidence'; }
+    else if(k==='video'){ el=document.createElement('video'); el.src=url; el.controls=true; }
+    else { el=document.createElement('audio'); el.src=url; el.controls=true; }
+    mount.appendChild(el);
+  }
+}
+
+/* ---------- citizen: track ---------- */
+function trackNow(){
+  const q=document.getElementById('tQuery').value.trim().toLowerCase();
+  const box=document.getElementById('tResults');
+  if(!q){ box.innerHTML='<p class="muted">Enter a complaint ID (e.g. TN-2026-004821) or the mobile number used.</p>'; return; }
+  const hits=complaints.filter(c=>c.id.toLowerCase().includes(q)||c.phone.includes(q));
+  if(!hits.length){ box.innerHTML='<div class="card"><b>No match found.</b><p class="muted" style="margin-top:4px">Check the ID or use the 10-digit mobile number from registration.</p></div>'; return; }
+  box.innerHTML = hits.map(c=>{
+    const share=encodeURIComponent('My T.Nagar complaint '+c.id+' ('+c.cat+') — status: '+c.status);
+    return `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div><b style="font-size:15px">${c.id}</b>
+        <span class="muted" style="display:block;margin-top:2px">${esc(c.cat)} · ${esc(c.ward)} · ${c.date}</span></div>
+        <span class="badge ${c.status==='Resolved'?'done':c.status==='Open'?'open':'prog'}">${c.status}</span>
+      </div>
+      ${c.dept?`<div class="dept">&#127970; Handling department: ${esc(c.dept)}</div>`:''}
+      ${c.geo?`<div class="geo">&#128205; ${c.geo.lat}, ${c.geo.lng} <a href="https://maps.google.com/?q=${c.geo.lat},${c.geo.lng}" target="_blank" rel="noopener">Map</a></div>`:''}
+      <div class="preview" id="att_${c.id}"></div>
+      <ul class="tl">${c.steps.map((s,i)=>
+        `<li class="${s[2]?'done':(c.steps[i-1]&&c.steps[i-1][2]?'now':'')}"><b>${esc(s[0])}</b><span>${esc(s[1])}</span></li>`).join('')}</ul>
+      ${c.feedback?`<div class="fb"><b>Ward office feedback · ${c.feedback.at}</b>${esc(c.feedback.msg)}</div>`:''}
+      ${c.status==='Resolved'?`
+        <div style="margin-top:12px"><b style="font-size:13px">Rate this resolution</b>
+        <div class="stars">${[1,2,3,4,5].map(n=>`<button class="${c.rating>=n?'on':''}" onclick="rate('${c.id}',${n})" aria-label="${n} star">&#9733;</button>`).join('')}</div>
+        <button class="btn ghost" onclick="reopen('${c.id}')">Not fixed? Reopen complaint</button></div>`:''}
+      ${c.dept && c.status!=='Resolved' && !c.escalated ? `<button class="btn ghost" onclick="escalate('${c.id}')">&#9650; ${T('b_esc')}</button>`:''}
+      ${c.escalated ? `<div class="dept" style="background:#FDF1F1;color:#C0262B">&#9650; Escalated to Zonal Officer, Zone 9 — quote ${c.id} on 1913 / 1100</div>`:''}
+      <button class="btn gold" onclick="window.open('https://wa.me/?text=${share}','_blank')">Share on WhatsApp</button>
+    </div>`;
+  }).join('');
+  hits.forEach(c=>attachHTML(c,'att_'+c.id));
+}
+function rate(id,n){
+  const c=complaints.find(x=>x.id===id); c.rating=n; save(); trackNow();
+  toast('Thanks! Rated '+n+'★ — sent to the ward office');
+}
+function reopen(id){
+  const c=complaints.find(x=>x.id===id);
+  c.status='Open';
+  const now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  c.steps.push(['Reopened by citizen',now,1],['Re-inspection','Pending',0]);
+  save(); pushNotif(id+' reopened — sent back to ward queue'); trackNow();
+  toast(id+' reopened');
+}
+
+
+function escalate(id){
+  const c=complaints.find(x=>x.id===id);
+  c.escalated=true;
+  const now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  c.steps.push(['Escalated to Zonal Officer (Zone 9)', now, 1]);
+  save(); pushNotif(id+' escalated to Zonal Officer'); trackNow();
+  toast('Escalated — evidence pack sent to Zone 9');
+}
+
+
+
+/* ---------- me too (device-level, one vote per issue) ---------- */
+function voted(id){ return (store.get('tvk_voted')||[]).includes(id); }
+function meToo(id){
+  if(voted(id)){ toast('You already supported this issue'); return; }
+  const c=complaints.find(x=>x.id===id);
+  c.votes=(c.votes||0)+1;
+  const v=store.get('tvk_voted')||[]; v.push(id); store.set('tvk_voted',v);
+  save();
+  if(c.votes===5||c.votes===10||c.votes===25) pushNotif(c.id+' now backed by '+c.votes+' residents — priority raised');
+  renderWardView();
+  toast('Added your support — '+c.votes+' residents affected');
+}
+
+/* ---------- ward views ---------- */
+function trackMode(m,btn){
+  btn.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tMine').classList.toggle('hide',m!=='mine');
+  document.getElementById('tWard').classList.toggle('hide',m!=='ward');
+  document.getElementById('tResults').innerHTML='';
+  if(m==='ward') renderWardView();
+}
+function renderWardView(){
+  const w=document.getElementById('wardSel').value;
+  const out=document.getElementById('wardOut');
+  if(!w){ out.innerHTML='<p class="muted">Pick a ward to see what your neighbours have reported. Names and numbers are never shown.</p>'; return; }
+  const list=complaints.filter(c=>c.ward===w);
+  const open=list.filter(c=>c.status!=='Resolved').length;
+  const done=list.filter(c=>c.status==='Resolved').length;
+  const cats={};
+  list.forEach(c=>cats[c.cat]=(cats[c.cat]||0)+1);
+  const top=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  out.innerHTML=`
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="s"><b>${list.length}</b><span>Reported</span></div>
+      <div class="s"><b>${open}</b><span>Open</span></div>
+      <div class="s"><b>${done}</b><span>Resolved</span></div>
+    </div>
+    ${top.length?`<div class="card"><h2>Top issues in ${esc(w)}</h2>${top.map(([k,v])=>`
+      <div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:12.5px"><b>${esc(k)}</b><span>${v}</span></div>
+      <div class="pb"><i style="width:${Math.round(v/list.length*100)}%"></i></div></div>`).join('')}</div>`:''}
+    <div class="card"><h2>Recent reports</h2>
+      ${list.length?list.slice().sort((a,b)=>(b.votes||0)-(a.votes||0)).slice(0,8).map(c=>`
+      <div class="row" style="flex-wrap:wrap"><div class="dot">${esc(c.ward.replace('Ward ',''))}</div>
+        <div class="m"><b>${esc(c.cat)}</b><span>${c.id} · ${c.date}${c.geo?' · &#128205;':''}</span></div>
+        <span class="badge ${c.status==='Resolved'?'done':c.status==='Open'?'open':'prog'}">${c.status}</span>
+        ${c.status!=='Resolved'?`<button class="chip ${voted(c.id)?'on':''}" style="flex-basis:100%;margin-top:8px;text-align:center" onclick="meToo('${c.id}')">&#128077; ${voted(c.id)?'You + ':''}${c.votes||0} affected — Me too</button>`:''}</div>`).join('')
+      :'<p class="muted">No reports yet in this ward — be the first.</p>'}
+    </div>`;
+}
+let wFilter='all';
+function filterW(w,btn){
+  wFilter=w;
+  btn.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on'); renderQueue(qFilter);
+}
+function renderWardBars(){
+  const el=document.getElementById('wardBars'); if(!el) return;
+  const wards=['Ward 119','Ward 120','Ward 121','Ward 122','Ward 123'];
+  const counts=wards.map(w=>complaints.filter(c=>c.ward===w&&c.status!=='Resolved').length);
+  const max=Math.max(...counts,1);
+  el.innerHTML='<div class="bars">'+wards.map((w,i)=>
+    `<div class="b"><i style="height:${Math.max(counts[i]/max*100,6)}%"></i>${w.replace('Ward ','')}<b style="font-size:10px">${counts[i]}</b></div>`).join('')+'</div>';
+}
+
+/* ---------- admin: queue with detail, forward, feedback ---------- */
+const ORDER=['Open','In Progress','Resolved'];
+let openDetail=null;
+function renderQueue(f){
+  const list=complaints.filter(c=>(f==='all'||c.status===f)&&(wFilter==='all'||c.ward===wFilter)).slice().sort((a,b)=>(b.votes||0)-(a.votes||0));
+  document.getElementById('aList').innerHTML = list.length ? list.map(c=>`
+    <div class="row" style="flex-wrap:wrap">
+      <div class="dot">${esc(c.ward.replace('Ward ',''))}</div>
+      <div class="m" onclick="toggleDetail('${c.id}')" style="cursor:pointer">
+        <b>${c.id} ${(c.votes||0)>0?`<span style=\"color:var(--warn);font-size:11px\">&#128077;${c.votes}</span>`:''} ${c.media&&(c.media.photo||c.media.video||c.media.voice)?'&#128206;':''} ${c.geo?'&#128205;':''}</b>
+        <span>${esc(c.name)} · ${esc(c.cat)} · ${c.date}</span></div>
+      <button class="badge ${c.status==='Resolved'?'done':c.status==='Open'?'open':'prog'}"
+        onclick="cycle('${c.id}')">${c.status} &#8635;</button>
+      ${openDetail===c.id?detailHTML(c):''}
+    </div>`).join('') : '<p class="muted">Nothing in this filter.</p>';
+  if(openDetail){ const c=complaints.find(x=>x.id===openDetail); if(c) attachHTML(c,'adAtt_'+c.id); }
+  aTotal.textContent=complaints.length+1281;
+  aDone.textContent=complaints.filter(c=>c.status==='Resolved').length+943;
+  aProg.textContent=complaints.filter(c=>c.status!=='Resolved').length+335;
+  renderWardBars();
+  const hot=complaints.filter(c=>c.status!=='Resolved'&&(c.votes||0)>0).sort((a,b)=>b.votes-a.votes).slice(0,3);
+  const hl=document.getElementById('hotList');
+  if(hl) hl.innerHTML=hot.length?hot.map(c=>`
+    <div class="row"><div class="dot">&#128077;</div>
+    <div class="m"><b>${c.id} · ${esc(c.cat)}</b><span>${esc(c.ward)} · ${c.votes} residents affected</span></div></div>`).join('')
+    :'<p class="muted">No community-backed issues right now.</p>';
+}
+function detailHTML(c){
+  const sug=DEPTS[c.cat]||DEPTS['Others'];
+  return `<div class="detail" style="flex-basis:100%">
+    <div class="kvline"><span>Citizen</span><b>${c.anon?'Anonymous (no contact on record)':esc(c.name)+' · '}${c.anon?'':`<a href="tel:${esc(c.phone)}" style="color:var(--brand)">${esc(c.phone)}</a>`}</b></div>
+    ${c.escalated?`<div class="dept" style="background:#FDF1F1;color:#C0262B">&#9650; ESCALATED — priority handling</div>`:''}
+    <div class="kvline"><span>Suggested dept</span><b>${esc(sug)}</b></div>
+    ${c.geo?`<div class="geo">&#128205; ${c.geo.lat}, ${c.geo.lng} <a href="https://maps.google.com/?q=${c.geo.lat},${c.geo.lng}" target="_blank" rel="noopener">Open map</a></div>`:''}
+    <div class="preview" id="adAtt_${c.id}"></div>
+    ${c.dept
+      ? `<div class="dept">Forwarded to: ${esc(c.dept)}</div>`
+      : `<select class="in" id="deptSel_${c.id}" style="margin-top:10px">
+           ${Object.values(DEPTS).map(d=>`<option ${d===sug?'selected':''}>${d}</option>`).join('')}
+         </select>
+         <button class="btn" onclick="forward('${c.id}')">Forward to department &rarr;</button>`}
+    <label class="f">Feedback to complainant <small>(sent as SMS + shown in their tracker)</small></label>
+    <textarea class="in" id="fbTxt_${c.id}" placeholder="e.g. Pothole patched on 14 Jul. Please verify and rate.">${c.feedback?esc(c.feedback.msg):''}</textarea>
+    <button class="btn gold" onclick="sendFeedback('${c.id}')">Send feedback ${c.anon?'(shown in tracker only)':'to '+esc(c.name.split(' ')[0])}</button>
+  </div>`;
+}
+function toggleDetail(id){ openDetail = openDetail===id ? null : id; renderQueue(qFilter); }
+function forward(id){
+  const c=complaints.find(x=>x.id===id);
+  c.dept=document.getElementById('deptSel_'+id).value;
+  const now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  const i=c.steps.findIndex(s=>!s[2]);
+  c.steps[i>=0?i:c.steps.length-1]=['Forwarded to '+c.dept.split('—')[0].trim(), now, 1];
+  if(c.status==='Open') c.status='In Progress';
+  save(); pushNotif(id+' forwarded to '+c.dept.split('—')[0].trim());
+  renderQueue(qFilter);
+  toast('Forwarded — dispatch email queued to dept');
+}
+function sendFeedback(id){
+  const c=complaints.find(x=>x.id===id);
+  const msg=document.getElementById('fbTxt_'+id).value.trim();
+  if(!msg){ toast('Write the feedback message first'); return; }
+  const now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  c.feedback={msg,at:now};
+  save(); pushNotif('Feedback on '+id+' — please review & rate');
+  renderQueue(qFilter);
+  toast('Feedback sent to '+c.name+' (SMS + tracker)');
+}
+let qFilter='all';
+function filterQ(f,btn){
+  qFilter=f;
+  btn.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+  btn.classList.add('on'); renderQueue(f);
+}
+function cycle(id){
+  const c=complaints.find(x=>x.id===id);
+  const next=ORDER[(ORDER.indexOf(c.status)+1)%ORDER.length];
+  c.status=next;
+  const now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  if(next==='Resolved'){
+    c.steps.forEach((s,i)=>c.steps[i]=[s[0]==='Resolution & closure'?'Resolved & closed':s[0], s[2]?s[1]:now, 1]);
+    if(!c.feedback) c.feedback={msg:'Your complaint has been resolved and closed by the ward office on '+now+'. Please verify the work at the site and rate the resolution below. If the issue persists, tap Reopen.',at:now};
+    pushNotif(c.id+' resolved — closure feedback sent'+(c.anon?'':' via SMS to '+c.phone.slice(0,2)+'******'+c.phone.slice(-2)));
+  } else if(next==='In Progress'){
+    const i=c.steps.findIndex(s=>!s[2]); if(i>=0) c.steps[i]=[c.steps[i][0], now, 1];
+  } else if(next==='Open'){
+    c.steps=c.steps.map((s,i)=>i? [s[0].replace('Resolved & closed','Resolution & closure'),'Pending',0] : s);
+  }
+  save(); pushNotif(id+' status → '+next);
+  renderQueue(qFilter);
+  toast(id+' → '+next+' (citizen timeline updated)');
+}
+
+function evTab(k,btn){
+  btn.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.evpane').forEach(p=>p.classList.add('hide'));
+  document.getElementById('ev-'+k).classList.remove('hide');
+}
+/* ---------- PWA: runtime manifest + install ---------- */
+const ICON192="iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAADfUlEQVR42u3dPY4TQRSF0a4SS7CEExbAskiJSLwKJ0SkLILFsAASIzklHnKkxj9d3e2qe04KjIX1vnrVGjyUaWfnw/FtItbpeil7vn4x8CQHUQw9yTEUg09yCMXgkxxCMfgkh1AMPskhVMNPr1rMXjX8JEdQDD7JV6Jq+EneBtXwkxxBNfwkR1ANP8kRVG8VyWqrkqDHLVANP8kRVMNPcgSeAfAM4PQndQvYANgATn9St4ANgA3g9Cd1C9gA2ABOf1K3gA2ADQDRAbj+kHoNsgGwAUAAEKi4/2MDgABAACAAEAAIAAQAAgABgABAACAAEAAIAAQAAgABgABAACAAEAAIAAQAAgABgABAACAAEAAIAAQAAgABgABAACAAEAAIAAQATyt/fhT/T3Aj3z693+y1Pn//7Q23ATKHf4/XswF42UG0DWyA2OG3DQRg6EQgAMMmAgEYMhEIwHCJQADxQyUCAYAAkk9TW+A23wjbYYi+/Po5+2tfP3xs/nq+UTbvnbdgG/8b+rnft0YMuAJtfvrfO/yt/pyrkAC6O/nXjgABdDf8IhBAt9ef1kO79Ou5Bgmgu5PfJhCA4ReBAHq7/vh7CQAE4PrjGiQAEAAIAAQAAgABgACGstW/3/c5AQGAANYy6kcIfTRSAN1fT1x/BBAbgeEXQDfXhdbDuvTruf4IoNtN4OQXQGwEhl8A3V6Dlg5xq+F3/ZnnB2PtsAm2/slwzPOjEe/Q80cJnf6uQLFDZPgFAAJIPE2d/gKIHSrDL4DY4TL8AogdMsMvgNhhM/wCiB06w/883whrZI9vlhl8GyB2Gxj+RhvgfDjaANgAIAAQAAgABAACAAGAAEAAIAAQAAgABAACAAGAAEAAIAAQAAgABAACAAGAAEAAIAAQAAgABAACAAGAAEAAIAAQAAgABAACgCUBnK6X4m0g0el6KTYArkAgAEgNwHMAifd/GwAbwFuAAFyDCLz+2ADYAHNlwOinvw2ADXCrEBj19LcBsAHuLQVGO/1tAGyAR4uBUU7/mxtABIw8/HddgUTAqMPvGQDPAK1Kgt5O/4c2gAgYbfgfvgKJgJGG/6lnABEwyvBP0zQtGubz4fjmbafHwX96A9gGjDL8iwMQAT0P/+IrkCsRvQ7+KgEIgV4Gf9UAhMCrD/4mAQiBV3++3PwBVgzsPfS7BiAI9hz4f/0FqKdJxgZqxYEAAAAASUVORK5CYII=", ICON512="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";
+(function(){
+  const man={
+    name:"TVK T.Nagar", short_name:"TVK T.Nagar",
+    start_url:location.href, scope:location.href.substring(0,location.href.lastIndexOf('/')+1),
+    display:"standalone", background_color:"#5E0D10", theme_color:"#8B1418",
+    icons:[{src:"data:image/png;base64,"+ICON192,sizes:"192x192",type:"image/png"},
+           {src:"data:image/png;base64,"+ICON512,sizes:"512x512",type:"image/png"}]
+  };
+  const link=document.createElement('link');
+  link.rel='manifest';
+  link.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(man));
+  document.head.appendChild(link);
+  const ai=document.createElement('link');
+  ai.rel='apple-touch-icon';
+  ai.href='data:image/png;base64,'+ICON192;
+  document.head.appendChild(ai);
+})();
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); deferredPrompt=e;
+  document.getElementById('installBtn').classList.add('show');
+});
+async function doInstall(){
+  if(!deferredPrompt){ toast('Use browser menu → Add to Home Screen'); return; }
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  document.getElementById('installBtn').classList.remove('show');
+}
+/* iOS has no beforeinstallprompt — show hint button anyway on iOS Safari */
+if(/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone){
+  document.getElementById('installBtn').classList.add('show');
+}
+</script>
+</body>
+</html>
