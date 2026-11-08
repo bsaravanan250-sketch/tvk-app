@@ -1,0 +1,3 @@
+phase,weeks,picks,travel_m,secs_per_pick,picks_per_lh,labour_h,exc_rate,bidi_rate,highrack_share,pickface_share
+before,4,12243,70.2,138.6,26.0,472.0,0.0314,0.0263,0.3521,0.3792
+after,3,9007,38.6,82.9,43.4,207.0,0.0163,0.0093,0.0402,0.9598

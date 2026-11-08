@@ -1,0 +1,445 @@
+<meta name="dash-one-writer">
+<style>
+  .ewm { font-family: var(--font-anthropic-sans); display: grid; gap: var(--cds-gap-md); }
+  .ewm h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
+  .ewm h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .ewm p { margin: 0; }
+  .ewm .lead { font-size: var(--cds-font-size-body); max-width: 70ch; }
+  .ewm .muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .ewm .num { font-variant-numeric: tabular-nums; }
+  .ewm .grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+  .ewm .tiles { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+  .ewm .card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .ewm .tile .label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .ewm .tile .big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.4); line-height: 1.1; }
+  .ewm .tile .delta { font-size: var(--cds-font-size-caption); }
+  .ewm .good { color: var(--color-ok); }
+  .ewm .bad { color: var(--color-bad); }
+  .ewm .chart { position: relative; min-height: 240px; }
+  .ewm .chart svg { display: block; width: 100%; height: auto; }
+  .ewm .tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; }
+  .ewm table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); }
+  .ewm th, .ewm td { text-align: left; padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .ewm th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .ewm td.r, .ewm th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .ewm .scroll { overflow: auto; max-height: 26rem; }
+  .ewm .scroll th { position: sticky; top: 0; background: var(--color-panel); }
+  .ewm .controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: end; }
+  .ewm .controls label { display: grid; gap: 2px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .ewm .controls input { width: 7rem; padding: 4px 6px; border: 1px solid var(--cds-border); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font: inherit; }
+  .ewm .out { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+  .ewm .out .big { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); }
+  .ewm .legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .ewm .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  .ewm details { font-size: var(--cds-font-size-caption); }
+  .ewm details summary { cursor: pointer; }
+  .ewm .cfg { display: grid; gap: var(--cds-gap-sm); }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="ewm">
+  <header>
+    <h1 id="title">EWM travel reduction: WH01 picking before and after re-slotting</h1>
+    <p class="lead">After the new stock removal search sequence and A/B re-slotting went live on
+      <b class="num" data-draw="cutover">—</b>, travel per pick line fell from
+      <b class="num" data-draw="lead-before" data-source="summary" data-field="travel_m" data-where="phase=before">—</b> m to
+      <b class="num" data-draw="lead-after" data-source="summary" data-field="travel_m" data-where="phase=after">—</b> m
+      (<b class="num" data-draw="lead-pct" data-source="deltas" data-field="pct" data-where="metric=travel_m">—</b>) and picks per labour hour rose from
+      <b class="num" data-draw="lead-plh-b" data-source="summary" data-field="picks_per_lh" data-where="phase=before">—</b> to
+      <b class="num" data-draw="lead-plh-a" data-source="summary" data-field="picks_per_lh" data-where="phase=after">—</b>.</p>
+    <p class="muted">Sample data, synthetic. Baseline = weeks 1 to 4; steady state = weeks 6 to 8 (week 5 was the cut-over ramp). Replace the attached files with your own /SCWM/MON extract to see your site.</p>
+  </header>
+
+  <section class="tiles" id="kpis">
+    <div class="card tile">
+      <span class="label">Travel per pick line, steady state</span>
+      <span class="big num"><span data-draw="t-travel" data-source="summary" data-field="travel_m" data-where="phase=after">—</span> m</span>
+      <span class="delta num" data-draw="d-travel" data-source="deltas" data-field="pct" data-where="metric=travel_m">—</span>
+    </div>
+    <div class="card tile">
+      <span class="label">Picks per labour hour</span>
+      <span class="big num" data-draw="t-plh" data-source="summary" data-field="picks_per_lh" data-where="phase=after">—</span>
+      <span class="delta num" data-draw="d-plh" data-source="deltas" data-field="pct" data-where="metric=picks_per_lh">—</span>
+    </div>
+    <div class="card tile">
+      <span class="label">Labour seconds per pick line</span>
+      <span class="big num" data-draw="t-secs" data-source="summary" data-field="secs_per_pick" data-where="phase=after">—</span>
+      <span class="delta num" data-draw="d-secs" data-source="deltas" data-field="pct" data-where="metric=secs_per_pick">—</span>
+    </div>
+    <div class="card tile">
+      <span class="label">Bin denial rate</span>
+      <span class="big num" data-draw="t-bidi" data-source="summary" data-field="bidi_rate" data-where="phase=after">—</span>
+      <span class="delta num" data-draw="d-bidi" data-source="deltas" data-field="pct" data-where="metric=bidi_rate">—</span>
+    </div>
+    <div class="card tile">
+      <span class="label">Open tasks older than 4 h, avg per day</span>
+      <span class="big num" data-draw="t-open" data-source="phases" data-field="open4h" data-where="phase=after">—</span>
+      <span class="delta num" data-draw="d-open" data-source="deltas" data-field="pct" data-where="metric=open4h">—</span>
+    </div>
+    <div class="card tile">
+      <span class="label">Dock-to-stock, hours (inbound, not in scope)</span>
+      <span class="big num" data-draw="t-d2s" data-source="phases" data-field="d2s_h" data-where="phase=after">—</span>
+      <span class="delta num" data-draw="d-d2s" data-source="deltas" data-field="pct" data-where="metric=d2s_h">—</span>
+    </div>
+  </section>
+
+  <section class="grid" id="trend">
+    <div class="card">
+      <h2>Travel per pick line by week</h2>
+      <p class="muted">Metres walked per confirmed pick task, front cross-aisle routing from bin X/Y coordinates. Dashed line marks the cut-over.</p>
+      <div class="chart" data-draw="chart-travel" data-source="weekly"></div>
+    </div>
+    <div class="card">
+      <h2>Picks per labour hour by week</h2>
+      <p class="muted">Confirmed pick tasks divided by direct labour hours times an 18% indirect allowance.</p>
+      <div class="chart" data-draw="chart-plh" data-source="weekly"></div>
+    </div>
+  </section>
+
+  <section class="grid" id="mix">
+    <div class="card">
+      <h2>Where picks are taken from, by ABC class</h2>
+      <p class="muted">Share of pick tasks by source storage type. The point of the change is to move A and B picks into the pick face.</p>
+      <div class="legend"><span><i data-draw="sw-0020"></i>Pick face 0020</span><span><i data-draw="sw-0010"></i>High rack 0010</span><span><i data-draw="sw-0030"></i>Floor bulk 0030</span></div>
+      <div class="chart" data-draw="chart-mix" data-source="st_share" style="min-height: 220px"></div>
+    </div>
+    <div class="card">
+      <h2>Pick density by aisle</h2>
+      <p class="muted">Pick tasks per week per aisle. Aisle 1 is nearest the packing and goods issue zone; aisles 21 to 24 are floor bulk.</p>
+      <div class="chart" data-draw="chart-aisle" data-source="aisle_heat" style="min-height: 140px"></div>
+    </div>
+  </section>
+
+  <section class="card" id="savings">
+    <h2>Annualised labour saving</h2>
+    <p class="muted">Seconds saved per pick line times annual pick lines. Enter your own loaded labour rate and the share of the sample effect you want to plan on. The sample shows a large effect because its baseline slotting was poor; 40 to 60% is a prudent planning figure for a site that already has some pick-face discipline.</p>
+    <div class="controls">
+      <label>Loaded labour rate per hour<input id="in-rate" type="number" min="1" step="1" value="25"></label>
+      <label>Currency<input id="in-cur" type="text" maxlength="4" value="EUR"></label>
+      <label>Share of sample effect to plan on, %<input id="in-share" type="number" min="5" max="100" step="5" value="50"></label>
+      <label>Hours per FTE per year<input id="in-fte" type="number" min="1000" max="2500" step="50" value="1900"></label>
+    </div>
+    <div class="out">
+      <div><span class="muted">Pick lines per year</span><br><span class="big num" data-draw="s-picks" data-source="annual" data-field="picks_per_year" data-row="0">—</span></div>
+      <div><span class="muted">Seconds saved per pick line (sample)</span><br><span class="big num" data-draw="s-secs" data-source="annual" data-field="secs_saved" data-row="0">—</span></div>
+      <div><span class="muted">Labour hours saved per year (sample)</span><br><span class="big num" data-draw="s-hours" data-source="annual" data-field="hours_saved" data-row="0">—</span></div>
+      <div><span class="muted">Planned hours saved</span><br><span class="big num" data-draw="s-hours-plan">—</span></div>
+      <div><span class="muted">Planned FTE equivalent</span><br><span class="big num" data-draw="s-fte">—</span></div>
+      <div><span class="muted">Planned saving per year</span><br><span class="big num" data-draw="s-money">—</span></div>
+    </div>
+  </section>
+
+  <section class="card" id="items">
+    <h2>Top 15 items by pick frequency: where they were and where they went</h2>
+    <p class="muted">Bin format aisle-stack-level. Travel is the average metres per pick line on orders that included the item.</p>
+    <div class="scroll">
+      <table data-source="top_items" data-row-key="matnr">
+        <thead><tr>
+          <th data-field="matnr">Product</th>
+          <th data-field="desc">Description</th>
+          <th data-field="abc">ABC</th>
+          <th class="r" data-field="picks_per_week">Picks / week</th>
+          <th data-field="bin_before">Bin before</th>
+          <th data-field="st_before">Type</th>
+          <th data-field="bin_after">Bin after</th>
+          <th data-field="st_after">Type</th>
+          <th class="r" data-field="travel_before">Travel before, m</th>
+          <th class="r" data-field="travel_after">Travel after, m</th>
+        </tr></thead>
+        <tbody data-draw="top-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="grid" id="config">
+    <div class="card cfg">
+      <h2>What was changed in EWM</h2>
+      <table>
+        <thead><tr><th>Object</th><th>Before</th><th>After</th></tr></thead>
+        <tbody>
+          <tr><td>Storage type search sequence, stock removal</td><td>0010 → 0020 → 0030</td><td>0020 → 0030 → 0010</td></tr>
+          <tr><td>Stock removal control indicator</td><td>One indicator for all products</td><td>PF01 for products with a pick face</td></tr>
+          <tr><td>Slotting (A and B items)</td><td>Never run</td><td>/SCWM/SLOT, rearrangement via /SCWM/REAR</td></tr>
+          <tr><td>Pick-face replenishment</td><td>Not maintained</td><td>Min/max per pick-face bin, planned replenishment</td></tr>
+          <tr><td>Bin sorting for picking</td><td>Bin number order</td><td>Serpentine by aisle, /SCWM/SBST</td></tr>
+          <tr><td>Warehouse order creation rule</td><td>Single order per delivery</td><td>Limit 8 items per order, sorted by activity area</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card cfg">
+      <h2>Where each KPI comes from</h2>
+      <table>
+        <thead><tr><th>KPI</th><th>EWM source</th></tr></thead>
+        <tbody>
+          <tr><td>Travel per pick line</td><td>/SCWM/ORDIM_C source bin joined to /SCWM/LAGP X/Y coordinates, routed in warehouse order sequence</td></tr>
+          <tr><td>Picks per labour hour</td><td>Confirmed tasks per processor and shift, or Labour Management if licensed</td></tr>
+          <tr><td>Bin denial rate</td><td>Exception code BIDI on confirmed tasks</td></tr>
+          <tr><td>Open tasks older than 4 h</td><td>/SCWM/ORDIM_O, created timestamp vs now, warehouse monitor variant</td></tr>
+          <tr><td>Dock-to-stock</td><td>Inbound delivery GR timestamp to last putaway confirmation</td></tr>
+          <tr><td>Storage type mix by ABC</td><td>/SCWM/ORDIM_C source storage type joined to product ABC indicator</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <details>
+    <summary>Method, assumptions and what is left out</summary>
+    <p>Travel is the Manhattan route from the packing point through the order's bins in bin-sort sequence and back, using a front cross-aisle, divided by the lines in the order. Labour per line is travel at <span class="num" data-draw="a-walk" data-source="assumptions" data-field="value" data-where="key=walk_mps">—</span> m/s plus handling time (<span class="num" data-draw="a-hb" data-source="assumptions" data-field="value" data-where="key=handle_base_s">—</span> s at a shelf, <span class="num" data-draw="a-hh" data-source="assumptions" data-field="value" data-where="key=handle_highrack_s">—</span> s extra above level 1, <span class="num" data-draw="a-hk" data-source="assumptions" data-field="value" data-where="key=handle_bulk_s">—</span> s extra in bulk), times an indirect factor of <span class="num" data-draw="a-ind" data-source="assumptions" data-field="value" data-where="key=indirect_factor">—</span>. Annualised on <span class="num" data-draw="a-days" data-source="assumptions" data-field="value" data-where="key=working_days">—</span> working days.</p>
+    <p>Left out: replenishment labour for the pick faces (rises slightly after the change), the one-off cost of the physical move, and inbound putaway travel. Dock-to-stock is shown to prove the dashboard tracks what the change did not touch.</p>
+  </details>
+</div>
+
+<script>
+  // ---------- helpers ----------
+  const okRows = (id) => { const g = dash.data(id); return g.status === 'ok' ? g.data : null; };
+  const fmtInt = d3.format(',');
+  const fmt1 = d3.format(',.1f');
+  const fmtPct = d3.format('+.0%');
+  const fmtPct1 = d3.format('.1%');
+  const num = (v) => (v === '' || v == null) ? NaN : Number(v);
+
+  // ---------- calcs ----------
+  dash.calc('phases', {
+    inputs: ['weekly'],
+    title: 'Weekly KPIs averaged per phase',
+    description: 'Open tasks over 4 h and dock-to-stock hours averaged over baseline weeks 1-4 and steady-state weeks 6-8.',
+    fn: (weekly) => ['before', 'after'].map((phase) => {
+      const rows = weekly.filter((r) => phase === 'before' ? Number(r.week) <= 4 : Number(r.week) >= 6);
+      const avg = (f) => rows.reduce((s, r) => s + Number(r[f]), 0) / rows.length;
+      return { phase, open4h: Math.round(avg('open4h') * 10) / 10, d2s_h: Math.round(avg('d2s_h') * 100) / 100 };
+    }),
+  });
+
+  dash.calc('deltas', {
+    inputs: ['summary', 'phases'],
+    title: 'Change, steady state vs baseline',
+    description: 'Relative change of each KPI from the baseline phase to the steady-state phase.',
+    fn: (summary, phases) => {
+      const pick = (rows, ph) => rows.find((r) => r.phase === ph);
+      const out = [];
+      for (const m of ['travel_m', 'picks_per_lh', 'secs_per_pick', 'bidi_rate', 'exc_rate']) {
+        const b = Number(pick(summary, 'before')[m]), a = Number(pick(summary, 'after')[m]);
+        out.push({ metric: m, before: b, after: a, pct: Math.round((a - b) / b * 1000) / 1000 });
+      }
+      for (const m of ['open4h', 'd2s_h']) {
+        const b = Number(pick(phases, 'before')[m]), a = Number(pick(phases, 'after')[m]);
+        out.push({ metric: m, before: b, after: a, pct: Math.round((a - b) / b * 1000) / 1000 });
+      }
+      return out;
+    },
+  });
+
+  dash.calc('st_share', {
+    inputs: ['st_mix'],
+    title: 'Storage type share by ABC and phase',
+    description: 'Each ABC class and phase: share of pick tasks taken from each source storage type.',
+    fn: (st_mix) => {
+      const out = [];
+      for (const phase of ['before', 'after']) for (const abc of ['A', 'B', 'C']) {
+        const rows = st_mix.filter((r) => r.phase === phase && r.abc === abc);
+        const tot = rows.reduce((s, r) => s + Number(r.picks), 0);
+        for (const st of ['0020', '0010', '0030']) {
+          const row = rows.find((r) => r.st === st);
+          out.push({ phase, abc, st, picks: row ? Number(row.picks) : 0, share: tot ? Math.round((row ? Number(row.picks) : 0) / tot * 1000) / 1000 : 0 });
+        }
+      }
+      return out;
+    },
+  });
+
+  dash.calc('annual', {
+    inputs: ['summary', 'assumptions'],
+    title: 'Annualised saving, sample effect',
+    description: 'Baseline picks per working day times working days per year; seconds saved per pick line from baseline to steady state; resulting labour hours per year.',
+    fn: (summary, assumptions) => {
+      const b = summary.find((r) => r.phase === 'before'), a = summary.find((r) => r.phase === 'after');
+      const days = Number(assumptions.find((r) => r.key === 'working_days').value);
+      const picksPerDay = Number(b.picks) / (Number(b.weeks) * 5);
+      const picksPerYear = Math.round(picksPerDay * days);
+      const secsSaved = Math.round((Number(b.secs_per_pick) - Number(a.secs_per_pick)) * 10) / 10;
+      const hoursSaved = Math.round(picksPerYear * secsSaved / 3600);
+      const share = Math.round((Number(b.secs_per_pick) - Number(a.secs_per_pick)) / Number(b.secs_per_pick) * 1000) / 1000;
+      return [{ picks_per_year: picksPerYear, secs_saved: secsSaved, hours_saved: hoursSaved, labour_share_saved: share }];
+    },
+  });
+
+  // ---------- simple value drawings ----------
+  const drawField = (name, source, field, where, fmt) => dash.draw(name, (el) => {
+    const rows = okRows(source);
+    if (!rows) { el.textContent = '—'; return; }
+    const row = where ? rows.find((r) => Object.entries(where).every(([k, v]) => String(r[k]) === v)) : rows[0];
+    el.textContent = row ? fmt(num(row[field])) : '—';
+  });
+  const drawDelta = (name, metric, goodWhenDown) => dash.draw(name, (el) => {
+    const rows = okRows('deltas');
+    const row = rows && rows.find((r) => r.metric === metric);
+    el.classList.remove('good', 'bad');
+    if (!row) { el.textContent = '—'; return; }
+    const good = goodWhenDown ? row.pct < 0 : row.pct > 0;
+    el.classList.add(Math.abs(row.pct) < 0.03 ? 'muted' : (good ? 'good' : 'bad'));
+    el.textContent = fmtPct(row.pct) + ' vs baseline';
+  });
+
+  dash.draw('cutover', (el) => {
+    const rows = okRows('assumptions');
+    const r = rows && rows.find((x) => x.key === 'cutover');
+    el.textContent = r ? d3.utcFormat('%-d %b %Y')(new Date(r.value)) : '—';
+  });
+  drawField('lead-before', 'summary', 'travel_m', { phase: 'before' }, fmt1);
+  drawField('lead-after', 'summary', 'travel_m', { phase: 'after' }, fmt1);
+  drawField('lead-plh-b', 'summary', 'picks_per_lh', { phase: 'before' }, fmt1);
+  drawField('lead-plh-a', 'summary', 'picks_per_lh', { phase: 'after' }, fmt1);
+  dash.draw('lead-pct', (el) => { const rows = okRows('deltas'); const r = rows && rows.find((x) => x.metric === 'travel_m'); el.textContent = r ? fmtPct(r.pct) : '—'; });
+
+  drawField('t-travel', 'summary', 'travel_m', { phase: 'after' }, fmt1);
+  drawField('t-plh', 'summary', 'picks_per_lh', { phase: 'after' }, fmt1);
+  drawField('t-secs', 'summary', 'secs_per_pick', { phase: 'after' }, fmt1);
+  drawField('t-bidi', 'summary', 'bidi_rate', { phase: 'after' }, fmtPct1);
+  drawField('t-open', 'phases', 'open4h', { phase: 'after' }, fmt1);
+  drawField('t-d2s', 'phases', 'd2s_h', { phase: 'after' }, fmt1);
+  drawDelta('d-travel', 'travel_m', true);
+  drawDelta('d-plh', 'picks_per_lh', false);
+  drawDelta('d-secs', 'secs_per_pick', true);
+  drawDelta('d-bidi', 'bidi_rate', true);
+  drawDelta('d-open', 'open4h', true);
+  drawDelta('d-d2s', 'd2s_h', true);
+
+  for (const [name, key] of [['a-walk', 'walk_mps'], ['a-hb', 'handle_base_s'], ['a-hh', 'handle_highrack_s'], ['a-hk', 'handle_bulk_s'], ['a-ind', 'indirect_factor'], ['a-days', 'working_days']]) {
+    drawField(name, 'assumptions', 'value', { key }, (v) => String(v));
+  }
+
+  // ---------- weekly line charts ----------
+  const weeklyChart = (el, rows, field, unit, fmt) => {
+    el.replaceChildren();
+    const W = Math.max(280, el.clientWidth || 600), H = 240, m = { t: 20, r: 16, b: 30, l: 44 };
+    const data = rows.map((r) => ({ week: Number(r.week), v: Number(r[field]), phase: r.phase, start: r.start })).sort((a, b) => a.week - b.week);
+    const x = d3.scalePoint(data.map((d) => d.week), [m.l, W - m.r]).padding(0.5);
+    const y = d3.scaleLinear([0, d3.max(data, (d) => d.v) * 1.15], [H - m.b, m.t]);
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('width', '100%');
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(-(W - m.l - m.r)).tickFormat(fmt))
+      .attr('font-size', null).attr('font-family', null)
+      .call((g) => g.select('.domain').remove())
+      .call((g) => g.selectAll('line').attr('stroke', 'var(--cds-chart-grid)'))
+      .call((g) => g.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)'));
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickFormat((d) => 'W' + d).tickSize(0))
+      .attr('font-size', null).attr('font-family', null)
+      .call((g) => g.select('.domain').attr('stroke', 'var(--cds-chart-axis)'))
+      .call((g) => g.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)').attr('dy', '1.2em'));
+    const cut = (x(4) + x(5)) / 2;
+    svg.append('line').attr('x1', cut).attr('x2', cut).attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', cut + 6).attr('y', m.t + 10).attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)').text('cut-over');
+    const line = d3.line().x((d) => x(d.week)).y((d) => y(d.v));
+    svg.append('path').datum(data).attr('d', line).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    const dots = svg.append('g').selectAll('circle').data(data).join('circle').attr('cx', (d) => x(d.week)).attr('cy', (d) => y(d.v)).attr('r', 4).attr('fill', dash.colors[0]);
+    const last = data[data.length - 1];
+    svg.append('text').attr('x', x(last.week)).attr('y', y(last.v) - 10).attr('text-anchor', 'end').attr('fill', 'var(--color-fg)').attr('font-size', 'var(--cds-font-size-caption)').text(fmt(last.v) + unit);
+    const first = data[0];
+    svg.append('text').attr('x', x(first.week)).attr('y', y(first.v) - 10).attr('text-anchor', 'start').attr('fill', 'var(--color-fg)').attr('font-size', 'var(--cds-font-size-caption)').text(fmt(first.v) + unit);
+    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
+    dots.on('pointerenter', (event, d) => {
+      tip.style('display', 'block').text(`Week ${d.week} (${d.start}): ${fmt(d.v)}${unit}`);
+      const px = x(d.week) / W * el.clientWidth;
+      tip.style('left', Math.min(px + 8, el.clientWidth - 180) + 'px').style('top', (y(d.v) / H * el.clientHeight - 36) + 'px');
+    }).on('pointerleave', () => tip.style('display', 'none'));
+  };
+  dash.draw('chart-travel', (el) => { const rows = okRows('weekly'); if (!rows) { el.replaceChildren(); return; } weeklyChart(el, rows, 'travel_m', ' m', fmt1); });
+  dash.draw('chart-plh', (el) => { const rows = okRows('weekly'); if (!rows) { el.replaceChildren(); return; } weeklyChart(el, rows, 'picks_per_lh', '', fmt1); });
+
+  // ---------- storage type mix: stacked horizontal bars ----------
+  const stColor = { '0020': dash.colors[0], '0010': 'var(--cds-chart-muted)', '0030': 'var(--cds-chart-axis)' };
+  for (const st of ['0020', '0010', '0030']) dash.draw('sw-' + st, (el) => { el.style.background = stColor[st]; });
+  dash.draw('chart-mix', (el) => {
+    el.replaceChildren();
+    const rows = okRows('st_share');
+    if (!rows) return;
+    const groups = [];
+    for (const abc of ['A', 'B', 'C']) for (const phase of ['before', 'after']) groups.push({ abc, phase, parts: rows.filter((r) => r.abc === abc && r.phase === phase) });
+    const W = Math.max(280, el.clientWidth || 600), rowH = 22, gap = 6, m = { t: 8, r: 44, b: 8, l: 86 };
+    const H = m.t + m.b + groups.length * (rowH + gap) + 2 * 10;
+    const x = d3.scaleLinear([0, 1], [m.l, W - m.r]);
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('width', '100%');
+    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
+    groups.forEach((g, i) => {
+      const yy = m.t + i * (rowH + gap) + Math.floor(i / 2) * 10;
+      svg.append('text').attr('x', m.l - 8).attr('y', yy + rowH / 2 + 4).attr('text-anchor', 'end').attr('fill', 'var(--color-fg)').attr('font-size', 'var(--cds-font-size-caption)').text(`${g.abc} items, ${g.phase}`);
+      let acc = 0;
+      for (const p of g.parts) {
+        const w = x(acc + p.share) - x(acc);
+        svg.append('rect').attr('x', x(acc)).attr('y', yy).attr('width', Math.max(0, w)).attr('height', rowH).attr('fill', stColor[p.st]).attr('rx', 2)
+          .on('pointerenter', (event) => {
+            tip.style('display', 'block').text(`${g.abc} ${g.phase}: ${p.st} ${fmtPct1(p.share)} (${fmtInt(p.picks)} picks)`);
+            tip.style('left', Math.min(x(acc) / W * el.clientWidth + 8, el.clientWidth - 220) + 'px').style('top', (yy / H * el.clientHeight - 30) + 'px');
+          }).on('pointerleave', () => tip.style('display', 'none'));
+        acc += p.share;
+      }
+      const pf = g.parts.find((p) => p.st === '0020');
+      svg.append('text').attr('x', W - m.r + 6).attr('y', yy + rowH / 2 + 4).attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)').text(pf ? fmtPct1(pf.share) : '');
+    });
+  });
+
+  // ---------- aisle heat strip ----------
+  dash.draw('chart-aisle', (el) => {
+    el.replaceChildren();
+    const rows = okRows('aisle_heat');
+    if (!rows) return;
+    const W = Math.max(280, el.clientWidth || 600), m = { l: 56, r: 8, t: 18, b: 20 }, rowH = 34, gap = 8;
+    const aisles = d3.range(1, 25);
+    const cw = (W - m.l - m.r) / aisles.length;
+    const max = d3.max(rows, (r) => Number(r.picks_per_week));
+    const H = m.t + 2 * rowH + gap + m.b;
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('width', '100%');
+    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
+    ['before', 'after'].forEach((phase, i) => {
+      const yy = m.t + i * (rowH + gap);
+      svg.append('text').attr('x', m.l - 8).attr('y', yy + rowH / 2 + 4).attr('text-anchor', 'end').attr('fill', 'var(--color-fg)').attr('font-size', 'var(--cds-font-size-caption)').text(phase);
+      for (const a of aisles) {
+        const r = rows.find((x) => x.phase === phase && Number(x.aisle) === a);
+        const v = r ? Number(r.picks_per_week) : 0;
+        svg.append('rect').attr('x', m.l + (a - 1) * cw + 1).attr('y', yy).attr('width', Math.max(0, cw - 2)).attr('height', rowH).attr('rx', 2)
+          .attr('fill', dash.colors[0]).attr('fill-opacity', 0.08 + 0.92 * (max ? v / max : 0))
+          .on('pointerenter', () => { tip.style('display', 'block').text(`Aisle ${a}, ${phase}: ${fmtInt(v)} picks/week`); tip.style('left', Math.min((m.l + (a - 1) * cw) / W * el.clientWidth, el.clientWidth - 200) + 'px').style('top', (yy / H * el.clientHeight - 30) + 'px'); })
+          .on('pointerleave', () => tip.style('display', 'none'));
+      }
+    });
+    for (const a of aisles) if (a === 1 || a % 4 === 0) svg.append('text').attr('x', m.l + (a - 0.5) * cw).attr('y', H - 6).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)').text(a);
+    svg.append('text').attr('x', m.l).attr('y', 11).attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)').text('aisle, nearest packing on the left');
+  });
+
+  // ---------- savings ----------
+  drawField('s-picks', 'annual', 'picks_per_year', null, fmtInt);
+  drawField('s-secs', 'annual', 'secs_saved', null, fmt1);
+  drawField('s-hours', 'annual', 'hours_saved', null, fmtInt);
+  const inputs = () => {
+    const get = (id, dflt) => { const n = Number((document.getElementById(id) || {}).value); return Number.isFinite(n) && n > 0 ? n : dflt; };
+    const curEl = document.getElementById('in-cur');
+    return { rate: get('in-rate', 25), share: get('in-share', 50) / 100, fte: get('in-fte', 1900), cur: curEl && curEl.value ? curEl.value : '' };
+  };
+  const planned = () => { const rows = okRows('annual'); if (!rows) return null; const i = inputs(); const h = Number(rows[0].hours_saved) * i.share; return { ...i, hours: h }; };
+  dash.draw('s-hours-plan', (el) => { const p = planned(); el.textContent = p ? fmtInt(Math.round(p.hours)) : '—'; });
+  dash.draw('s-fte', (el) => { const p = planned(); el.textContent = p ? d3.format('.2f')(p.hours / p.fte) : '—'; });
+  dash.draw('s-money', (el) => { const p = planned(); el.textContent = p ? `${p.cur} ${fmtInt(Math.round(p.hours * p.rate))}` : '—'; });
+  for (const id of ['in-rate', 'in-cur', 'in-share', 'in-fte']) {
+    document.querySelectorAll('#' + id).forEach((inp) => inp.addEventListener('input', () => { dash.draw('s-hours-plan'); dash.draw('s-fte'); dash.draw('s-money'); }));
+  }
+
+  // ---------- top items table ----------
+  dash.draw('top-rows', (tb) => {
+    tb.replaceChildren();
+    const rows = okRows('top_items');
+    if (!rows) return;
+    const cols = ['matnr', 'desc', 'abc', 'picks_per_week', 'bin_before', 'st_before', 'bin_after', 'st_after', 'travel_before', 'travel_after'];
+    const right = new Set(['picks_per_week', 'travel_before', 'travel_after']);
+    for (const r of [...rows].sort((a, b) => Number(b.picks_per_week) - Number(a.picks_per_week))) {
+      const tr = document.createElement('tr');
+      for (const c of cols) {
+        const td = document.createElement('td');
+        const v = r[c];
+        td.textContent = c === 'picks_per_week' ? fmtInt(Number(v)) : (c.startsWith('travel') ? (v === '' || v == null ? '' : fmt1(Number(v))) : String(v ?? ''));
+        if (right.has(c)) td.className = 'r';
+        tr.appendChild(td);
+      }
+      tb.appendChild(tr);
+    }
+  });
+</script>

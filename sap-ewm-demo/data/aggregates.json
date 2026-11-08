@@ -1,0 +1,1030 @@
+{
+ "generated": "2026-11-08",
+ "warehouse": "WH01",
+ "cutover": "2026-10-05",
+ "assumptions": {
+  "walk_mps": 1.0,
+  "handle_base_s": 28,
+  "handle_highrack_s": 35,
+  "handle_bulk_s": 15,
+  "indirect_factor": 1.18,
+  "working_days": 250
+ },
+ "products": {
+  "total": 600,
+  "A": 161,
+  "B": 254,
+  "C": 185
+ },
+ "summary": {
+  "before": {
+   "picks": 12243,
+   "travel_m": 70.2,
+   "secs_per_pick": 138.6,
+   "picks_per_lh": 26.0,
+   "labour_h": 472.0,
+   "exc_rate": 0.0314,
+   "bidi_rate": 0.0263,
+   "highrack_share": 0.3521,
+   "pickface_share": 0.3792
+  },
+  "after": {
+   "picks": 9007,
+   "travel_m": 38.6,
+   "secs_per_pick": 82.9,
+   "picks_per_lh": 43.4,
+   "labour_h": 207.0,
+   "exc_rate": 0.0163,
+   "bidi_rate": 0.0093,
+   "highrack_share": 0.0402,
+   "pickface_share": 0.9598
+  },
+  "weeks_before": 4,
+  "weeks_after": 3
+ },
+ "weekly": [
+  {
+   "week": 1,
+   "start": "2026-09-07",
+   "phase": "before",
+   "picks": 2964,
+   "travel_m": 70.3,
+   "labour_h": 115.0,
+   "picks_per_lh": 25.9,
+   "exc_rate": 0.0354,
+   "bidi_rate": 0.03,
+   "cutoff": 1.0,
+   "d2s_h": 5.85,
+   "open4h": 38.4
+  },
+  {
+   "week": 2,
+   "start": "2026-09-14",
+   "phase": "before",
+   "picks": 2945,
+   "travel_m": 69.4,
+   "labour_h": 113.0,
+   "picks_per_lh": 26.1,
+   "exc_rate": 0.0299,
+   "bidi_rate": 0.0244,
+   "cutoff": 1.0,
+   "d2s_h": 5.63,
+   "open4h": 40.4
+  },
+  {
+   "week": 3,
+   "start": "2026-09-21",
+   "phase": "before",
+   "picks": 3126,
+   "travel_m": 69.7,
+   "labour_h": 120.0,
+   "picks_per_lh": 26.1,
+   "exc_rate": 0.0304,
+   "bidi_rate": 0.0269,
+   "cutoff": 1.0,
+   "d2s_h": 5.44,
+   "open4h": 33.4
+  },
+  {
+   "week": 4,
+   "start": "2026-09-28",
+   "phase": "before",
+   "picks": 3208,
+   "travel_m": 71.2,
+   "labour_h": 124.0,
+   "picks_per_lh": 25.8,
+   "exc_rate": 0.0299,
+   "bidi_rate": 0.024,
+   "cutoff": 1.0,
+   "d2s_h": 5.57,
+   "open4h": 32.6
+  },
+  {
+   "week": 5,
+   "start": "2026-10-05",
+   "phase": "after",
+   "picks": 2982,
+   "travel_m": 46.6,
+   "labour_h": 81.0,
+   "picks_per_lh": 36.8,
+   "exc_rate": 0.0215,
+   "bidi_rate": 0.0154,
+   "cutoff": 1.0,
+   "d2s_h": 5.54,
+   "open4h": 37.2
+  },
+  {
+   "week": 6,
+   "start": "2026-10-12",
+   "phase": "after",
+   "picks": 2871,
+   "travel_m": 38.4,
+   "labour_h": 66.0,
+   "picks_per_lh": 43.5,
+   "exc_rate": 0.0195,
+   "bidi_rate": 0.0091,
+   "cutoff": 1.0,
+   "d2s_h": 5.78,
+   "open4h": 20.4
+  },
+  {
+   "week": 7,
+   "start": "2026-10-19",
+   "phase": "after",
+   "picks": 3072,
+   "travel_m": 38.6,
+   "labour_h": 71.0,
+   "picks_per_lh": 43.4,
+   "exc_rate": 0.015,
+   "bidi_rate": 0.0094,
+   "cutoff": 1.0,
+   "d2s_h": 5.44,
+   "open4h": 22.0
+  },
+  {
+   "week": 8,
+   "start": "2026-10-26",
+   "phase": "after",
+   "picks": 3064,
+   "travel_m": 38.9,
+   "labour_h": 71.0,
+   "picks_per_lh": 43.4,
+   "exc_rate": 0.0147,
+   "bidi_rate": 0.0095,
+   "cutoff": 1.0,
+   "d2s_h": 6.07,
+   "open4h": 16.6
+  }
+ ],
+ "st_mix": [
+  {
+   "phase": "after",
+   "abc": "A",
+   "st": "0020",
+   "picks": 6326
+  },
+  {
+   "phase": "after",
+   "abc": "B",
+   "st": "0020",
+   "picks": 2249
+  },
+  {
+   "phase": "after",
+   "abc": "C",
+   "st": "0010",
+   "picks": 362
+  },
+  {
+   "phase": "after",
+   "abc": "C",
+   "st": "0020",
+   "picks": 70
+  },
+  {
+   "phase": "before",
+   "abc": "A",
+   "st": "0010",
+   "picks": 4473
+  },
+  {
+   "phase": "before",
+   "abc": "A",
+   "st": "0020",
+   "picks": 3712
+  },
+  {
+   "phase": "before",
+   "abc": "A",
+   "st": "0030",
+   "picks": 387
+  },
+  {
+   "phase": "before",
+   "abc": "B",
+   "st": "0010",
+   "picks": 2069
+  },
+  {
+   "phase": "before",
+   "abc": "B",
+   "st": "0020",
+   "picks": 860
+  },
+  {
+   "phase": "before",
+   "abc": "B",
+   "st": "0030",
+   "picks": 130
+  },
+  {
+   "phase": "before",
+   "abc": "C",
+   "st": "0010",
+   "picks": 533
+  },
+  {
+   "phase": "before",
+   "abc": "C",
+   "st": "0020",
+   "picks": 71
+  },
+  {
+   "phase": "before",
+   "abc": "C",
+   "st": "0030",
+   "picks": 8
+  }
+ ],
+ "aisle_heat": [
+  {
+   "phase": "before",
+   "aisle": 1,
+   "picks_per_week": 241.0
+  },
+  {
+   "phase": "before",
+   "aisle": 2,
+   "picks_per_week": 114.0
+  },
+  {
+   "phase": "before",
+   "aisle": 3,
+   "picks_per_week": 184.0
+  },
+  {
+   "phase": "before",
+   "aisle": 4,
+   "picks_per_week": 190.0
+  },
+  {
+   "phase": "before",
+   "aisle": 5,
+   "picks_per_week": 196.0
+  },
+  {
+   "phase": "before",
+   "aisle": 6,
+   "picks_per_week": 73.0
+  },
+  {
+   "phase": "before",
+   "aisle": 7,
+   "picks_per_week": 90.0
+  },
+  {
+   "phase": "before",
+   "aisle": 8,
+   "picks_per_week": 117.0
+  },
+  {
+   "phase": "before",
+   "aisle": 9,
+   "picks_per_week": 78.0
+  },
+  {
+   "phase": "before",
+   "aisle": 10,
+   "picks_per_week": 144.0
+  },
+  {
+   "phase": "before",
+   "aisle": 11,
+   "picks_per_week": 139.0
+  },
+  {
+   "phase": "before",
+   "aisle": 12,
+   "picks_per_week": 196.0
+  },
+  {
+   "phase": "before",
+   "aisle": 13,
+   "picks_per_week": 143.0
+  },
+  {
+   "phase": "before",
+   "aisle": 14,
+   "picks_per_week": 104.0
+  },
+  {
+   "phase": "before",
+   "aisle": 15,
+   "picks_per_week": 122.0
+  },
+  {
+   "phase": "before",
+   "aisle": 16,
+   "picks_per_week": 89.0
+  },
+  {
+   "phase": "before",
+   "aisle": 17,
+   "picks_per_week": 140.0
+  },
+  {
+   "phase": "before",
+   "aisle": 18,
+   "picks_per_week": 229.0
+  },
+  {
+   "phase": "before",
+   "aisle": 19,
+   "picks_per_week": 153.0
+  },
+  {
+   "phase": "before",
+   "aisle": 20,
+   "picks_per_week": 188.0
+  },
+  {
+   "phase": "before",
+   "aisle": 21,
+   "picks_per_week": 38.0
+  },
+  {
+   "phase": "before",
+   "aisle": 22,
+   "picks_per_week": 14.0
+  },
+  {
+   "phase": "before",
+   "aisle": 23,
+   "picks_per_week": 42.0
+  },
+  {
+   "phase": "before",
+   "aisle": 24,
+   "picks_per_week": 37.0
+  },
+  {
+   "phase": "after",
+   "aisle": 1,
+   "picks_per_week": 678.0
+  },
+  {
+   "phase": "after",
+   "aisle": 2,
+   "picks_per_week": 460.0
+  },
+  {
+   "phase": "after",
+   "aisle": 3,
+   "picks_per_week": 349.0
+  },
+  {
+   "phase": "after",
+   "aisle": 4,
+   "picks_per_week": 303.0
+  },
+  {
+   "phase": "after",
+   "aisle": 5,
+   "picks_per_week": 240.0
+  },
+  {
+   "phase": "after",
+   "aisle": 6,
+   "picks_per_week": 222.0
+  },
+  {
+   "phase": "after",
+   "aisle": 7,
+   "picks_per_week": 184.0
+  },
+  {
+   "phase": "after",
+   "aisle": 8,
+   "picks_per_week": 162.0
+  },
+  {
+   "phase": "after",
+   "aisle": 9,
+   "picks_per_week": 127.0
+  },
+  {
+   "phase": "after",
+   "aisle": 10,
+   "picks_per_week": 115.0
+  },
+  {
+   "phase": "after",
+   "aisle": 11,
+   "picks_per_week": 85.0
+  },
+  {
+   "phase": "after",
+   "aisle": 12,
+   "picks_per_week": 78.0
+  },
+  {
+   "phase": "after",
+   "aisle": 13,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 14,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 15,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 16,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 17,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 18,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 19,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 20,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 21,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 22,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 23,
+   "picks_per_week": 0.0
+  },
+  {
+   "phase": "after",
+   "aisle": 24,
+   "picks_per_week": 0.0
+  }
+ ],
+ "top_items": [
+  {
+   "matnr": "TVK-10000",
+   "desc": "Brake pad set 01",
+   "abc": "A",
+   "picks_per_week": 102.0,
+   "bin_before": "01-09-01",
+   "st_before": "0020",
+   "bin_after": "01-01-01",
+   "st_after": "0020",
+   "travel_before": 64.1,
+   "travel_after": 33.9
+  },
+  {
+   "matnr": "TVK-10001",
+   "desc": "Oil filter 01",
+   "abc": "A",
+   "picks_per_week": 60.0,
+   "bin_before": "19-22-03",
+   "st_before": "0010",
+   "bin_after": "01-02-01",
+   "st_after": "0020",
+   "travel_before": 73.3,
+   "travel_after": 33.2
+  },
+  {
+   "matnr": "TVK-10002",
+   "desc": "Air filter 01",
+   "abc": "A",
+   "picks_per_week": 60.0,
+   "bin_before": "18-01-04",
+   "st_before": "0010",
+   "bin_after": "01-03-01",
+   "st_after": "0020",
+   "travel_before": 64.3,
+   "travel_after": 34.9
+  },
+  {
+   "matnr": "TVK-10003",
+   "desc": "Cabin filter 01",
+   "abc": "A",
+   "picks_per_week": 53.0,
+   "bin_before": "20-20-01",
+   "st_before": "0010",
+   "bin_after": "02-01-01",
+   "st_after": "0020",
+   "travel_before": 72.9,
+   "travel_after": 33.9
+  },
+  {
+   "matnr": "TVK-10004",
+   "desc": "Spark plug 01",
+   "abc": "A",
+   "picks_per_week": 36.0,
+   "bin_before": "20-21-01",
+   "st_before": "0010",
+   "bin_after": "01-04-01",
+   "st_after": "0020",
+   "travel_before": 70.5,
+   "travel_after": 32.3
+  },
+  {
+   "matnr": "TVK-10011",
+   "desc": "Starter motor 01",
+   "abc": "A",
+   "picks_per_week": 36.0,
+   "bin_before": "01-32-01",
+   "st_before": "0020",
+   "bin_after": "01-07-01",
+   "st_after": "0020",
+   "travel_before": 75.2,
+   "travel_after": 35.3
+  },
+  {
+   "matnr": "TVK-10005",
+   "desc": "Wiper blade 01",
+   "abc": "A",
+   "picks_per_week": 36.0,
+   "bin_before": "05-04-01",
+   "st_before": "0020",
+   "bin_after": "02-02-01",
+   "st_after": "0020",
+   "travel_before": 65.1,
+   "travel_after": 34.3
+  },
+  {
+   "matnr": "TVK-10006",
+   "desc": "Brake disc 01",
+   "abc": "A",
+   "picks_per_week": 35.0,
+   "bin_before": "04-09-01",
+   "st_before": "0020",
+   "bin_after": "01-05-01",
+   "st_after": "0020",
+   "travel_before": 66.1,
+   "travel_after": 33.2
+  },
+  {
+   "matnr": "TVK-10010",
+   "desc": "Alternator 01",
+   "abc": "A",
+   "picks_per_week": 32.0,
+   "bin_before": "10-34-01",
+   "st_before": "0020",
+   "bin_after": "02-04-01",
+   "st_after": "0020",
+   "travel_before": 73.3,
+   "travel_after": 34.7
+  },
+  {
+   "matnr": "TVK-10009",
+   "desc": "Water pump 01",
+   "abc": "A",
+   "picks_per_week": 31.0,
+   "bin_before": "13-15-01",
+   "st_before": "0010",
+   "bin_after": "03-01-01",
+   "st_after": "0020",
+   "travel_before": 68.0,
+   "travel_after": 34.0
+  },
+  {
+   "matnr": "TVK-10008",
+   "desc": "Timing belt 01",
+   "abc": "A",
+   "picks_per_week": 30.0,
+   "bin_before": "01-04-01",
+   "st_before": "0020",
+   "bin_after": "01-06-01",
+   "st_after": "0020",
+   "travel_before": 64.1,
+   "travel_after": 34.2
+  },
+  {
+   "matnr": "TVK-10007",
+   "desc": "Shock absorber 01",
+   "abc": "A",
+   "picks_per_week": 30.0,
+   "bin_before": "18-16-01",
+   "st_before": "0010",
+   "bin_after": "02-03-01",
+   "st_after": "0020",
+   "travel_before": 69.2,
+   "travel_after": 34.2
+  },
+  {
+   "matnr": "TVK-10012",
+   "desc": "Headlamp bulb 01",
+   "abc": "A",
+   "picks_per_week": 28.0,
+   "bin_before": "05-08-05",
+   "st_before": "0010",
+   "bin_after": "03-02-01",
+   "st_after": "0020",
+   "travel_before": 63.1,
+   "travel_after": 34.8
+  },
+  {
+   "matnr": "TVK-10015",
+   "desc": "Radiator hose 01",
+   "abc": "A",
+   "picks_per_week": 26.0,
+   "bin_before": "24-17-01",
+   "st_before": "0030",
+   "bin_after": "03-03-01",
+   "st_after": "0020",
+   "travel_before": 83.3,
+   "travel_after": 35.4
+  },
+  {
+   "matnr": "TVK-10016",
+   "desc": "Thermostat 01",
+   "abc": "A",
+   "picks_per_week": 26.0,
+   "bin_before": "17-05-01",
+   "st_before": "0010",
+   "bin_after": "02-06-01",
+   "st_after": "0020",
+   "travel_before": 65.7,
+   "travel_after": 34.6
+  }
+ ],
+ "daily": [
+  {
+   "date": "2026-09-07",
+   "week": 1,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 6.17,
+   "open4h": 51,
+   "wos": 113
+  },
+  {
+   "date": "2026-09-08",
+   "week": 1,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 6.12,
+   "open4h": 39,
+   "wos": 101
+  },
+  {
+   "date": "2026-09-09",
+   "week": 1,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.86,
+   "open4h": 34,
+   "wos": 105
+  },
+  {
+   "date": "2026-09-10",
+   "week": 1,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.47,
+   "open4h": 34,
+   "wos": 105
+  },
+  {
+   "date": "2026-09-11",
+   "week": 1,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.64,
+   "open4h": 34,
+   "wos": 114
+  },
+  {
+   "date": "2026-09-14",
+   "week": 2,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.85,
+   "open4h": 34,
+   "wos": 100
+  },
+  {
+   "date": "2026-09-15",
+   "week": 2,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.19,
+   "open4h": 42,
+   "wos": 93
+  },
+  {
+   "date": "2026-09-16",
+   "week": 2,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.75,
+   "open4h": 42,
+   "wos": 110
+  },
+  {
+   "date": "2026-09-17",
+   "week": 2,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.64,
+   "open4h": 44,
+   "wos": 108
+  },
+  {
+   "date": "2026-09-18",
+   "week": 2,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.72,
+   "open4h": 40,
+   "wos": 114
+  },
+  {
+   "date": "2026-09-21",
+   "week": 3,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 6.07,
+   "open4h": 27,
+   "wos": 114
+  },
+  {
+   "date": "2026-09-22",
+   "week": 3,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.57,
+   "open4h": 32,
+   "wos": 119
+  },
+  {
+   "date": "2026-09-23",
+   "week": 3,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.59,
+   "open4h": 36,
+   "wos": 112
+  },
+  {
+   "date": "2026-09-24",
+   "week": 3,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 4.77,
+   "open4h": 34,
+   "wos": 114
+  },
+  {
+   "date": "2026-09-25",
+   "week": 3,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.21,
+   "open4h": 38,
+   "wos": 105
+  },
+  {
+   "date": "2026-09-28",
+   "week": 4,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 4.89,
+   "open4h": 31,
+   "wos": 126
+  },
+  {
+   "date": "2026-09-29",
+   "week": 4,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.95,
+   "open4h": 31,
+   "wos": 122
+  },
+  {
+   "date": "2026-09-30",
+   "week": 4,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 5.84,
+   "open4h": 32,
+   "wos": 108
+  },
+  {
+   "date": "2026-10-01",
+   "week": 4,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 4.94,
+   "open4h": 36,
+   "wos": 117
+  },
+  {
+   "date": "2026-10-02",
+   "week": 4,
+   "phase": "before",
+   "cutoff": 1.0,
+   "d2s": 6.24,
+   "open4h": 33,
+   "wos": 111
+  },
+  {
+   "date": "2026-10-05",
+   "week": 5,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.24,
+   "open4h": 34,
+   "wos": 106
+  },
+  {
+   "date": "2026-10-06",
+   "week": 5,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.22,
+   "open4h": 35,
+   "wos": 114
+  },
+  {
+   "date": "2026-10-07",
+   "week": 5,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.87,
+   "open4h": 42,
+   "wos": 104
+  },
+  {
+   "date": "2026-10-08",
+   "week": 5,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 6.02,
+   "open4h": 38,
+   "wos": 107
+  },
+  {
+   "date": "2026-10-09",
+   "week": 5,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.33,
+   "open4h": 37,
+   "wos": 115
+  },
+  {
+   "date": "2026-10-12",
+   "week": 6,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.41,
+   "open4h": 18,
+   "wos": 112
+  },
+  {
+   "date": "2026-10-13",
+   "week": 6,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.12,
+   "open4h": 19,
+   "wos": 107
+  },
+  {
+   "date": "2026-10-14",
+   "week": 6,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.65,
+   "open4h": 27,
+   "wos": 99
+  },
+  {
+   "date": "2026-10-15",
+   "week": 6,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 6.82,
+   "open4h": 13,
+   "wos": 106
+  },
+  {
+   "date": "2026-10-16",
+   "week": 6,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.92,
+   "open4h": 25,
+   "wos": 104
+  },
+  {
+   "date": "2026-10-19",
+   "week": 7,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.87,
+   "open4h": 14,
+   "wos": 100
+  },
+  {
+   "date": "2026-10-20",
+   "week": 7,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.77,
+   "open4h": 17,
+   "wos": 106
+  },
+  {
+   "date": "2026-10-21",
+   "week": 7,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 4.95,
+   "open4h": 33,
+   "wos": 114
+  },
+  {
+   "date": "2026-10-22",
+   "week": 7,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.21,
+   "open4h": 17,
+   "wos": 120
+  },
+  {
+   "date": "2026-10-23",
+   "week": 7,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.4,
+   "open4h": 29,
+   "wos": 108
+  },
+  {
+   "date": "2026-10-26",
+   "week": 8,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.91,
+   "open4h": 17,
+   "wos": 107
+  },
+  {
+   "date": "2026-10-27",
+   "week": 8,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 6.3,
+   "open4h": 16,
+   "wos": 118
+  },
+  {
+   "date": "2026-10-28",
+   "week": 8,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.97,
+   "open4h": 14,
+   "wos": 128
+  },
+  {
+   "date": "2026-10-29",
+   "week": 8,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 6.27,
+   "open4h": 22,
+   "wos": 113
+  },
+  {
+   "date": "2026-10-30",
+   "week": 8,
+   "phase": "after",
+   "cutoff": 1.0,
+   "d2s": 5.91,
+   "open4h": 14,
+   "wos": 97
+  }
+ ],
+ "st_desc": {
+  "0010": "High rack (pallet)",
+  "0020": "Pick face (shelving)",
+  "0030": "Floor bulk"
+ }
+}

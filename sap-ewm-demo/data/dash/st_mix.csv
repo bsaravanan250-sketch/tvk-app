@@ -1,0 +1,14 @@
+phase,abc,st,picks
+after,A,0020,6326
+after,B,0020,2249
+after,C,0010,362
+after,C,0020,70
+before,A,0010,4473
+before,A,0020,3712
+before,A,0030,387
+before,B,0010,2069
+before,B,0020,860
+before,B,0030,130
+before,C,0010,533
+before,C,0020,71
+before,C,0030,8

@@ -1,0 +1,12 @@
+key,value
+walk_mps,1.0
+handle_base_s,28
+handle_highrack_s,35
+handle_bulk_s,15
+indirect_factor,1.18
+working_days,250
+cutover,2026-10-05
+products_total,600
+products_A,161
+products_B,254
+products_C,185
