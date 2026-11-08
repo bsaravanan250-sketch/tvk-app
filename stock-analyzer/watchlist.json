@@ -1,5 +1,5 @@
 {
-  "_comment": "Edit freely. Yahoo Finance symbols: NSE = TICKER.NS, BSE = TICKER.BO, US = plain ticker. 'news' is the search phrase used for headlines.",
+  "_comment": "Edit freely. Yahoo Finance symbols: NSE = TICKER.NS, BSE = TICKER.BO, US = plain ticker. 'news' is the search phrase used for headlines. Note: Tata Motors split in 2025; the passenger-vehicle entity trades as TMPV.NS and has a short history.",
   "market": "IN",
   "benchmark": "^NSEI",
   "volatility_index": "^INDIAVIX",
@@ -20,7 +20,7 @@
     {"symbol": "KOTAKBANK.NS",  "name": "Kotak Mahindra Bank",  "news": "Kotak Mahindra Bank"},
     {"symbol": "HINDUNILVR.NS", "name": "Hindustan Unilever",   "news": "Hindustan Unilever HUL"},
     {"symbol": "MARUTI.NS",     "name": "Maruti Suzuki",        "news": "Maruti Suzuki"},
-    {"symbol": "TATAMOTORS.NS", "name": "Tata Motors",          "news": "Tata Motors"},
+    {"symbol": "M&M.NS",        "name": "Mahindra & Mahindra",  "news": "Mahindra & Mahindra"},
     {"symbol": "SUNPHARMA.NS",  "name": "Sun Pharma",           "news": "Sun Pharma"},
     {"symbol": "TITAN.NS",      "name": "Titan Company",        "news": "Titan Company"},
     {"symbol": "BAJFINANCE.NS", "name": "Bajaj Finance",        "news": "Bajaj Finance"},
