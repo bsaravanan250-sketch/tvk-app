@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Stock Brief</title>
+<meta name="description" content="Rules-based daily stock brief: market regime, ranked watchlist, actions, stops and position sizes.">
+<meta name="color-scheme" content="light dark">
+<style>
+:root{
+  color-scheme:light;
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10); --wash:rgba(11,11,11,.04);
+  --series:#2a78d6; --good:#0ca30c; --good-text:#006300; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --wash:rgba(255,255,255,.05);
+    --series:#3987e5; --good-text:#0ca30c;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --wash:rgba(255,255,255,.05);
+  --series:#3987e5; --good-text:#0ca30c;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--page);color:var(--ink);
+  line-height:1.45;font-size:15px;padding-bottom:40px}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:20;background:var(--page);border-bottom:1px solid var(--border);
+  padding:calc(10px + env(safe-area-inset-top)) 0 10px}
+header .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:18px;font-weight:700;letter-spacing:-.01em}
+header .date{color:var(--ink-2);font-size:13px}
+header .spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;
+  border:1px solid var(--border);background:var(--surface);white-space:nowrap}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center}
+.banner{margin:12px 0 0;padding:10px 14px;border-radius:10px;font-size:13px;border:1px solid var(--border);background:var(--surface);
+  display:flex;gap:10px;align-items:flex-start}
+.banner.warn{border-color:color-mix(in srgb,var(--warn) 50%,transparent)}
+.banner.err{border-color:color-mix(in srgb,var(--crit) 50%,transparent)}
+.banner b{font-weight:700}
+.banner code{font-size:12px;background:var(--wash);padding:1px 5px;border-radius:4px}
+main{padding-top:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.grid{display:grid;gap:12px}
+.regime{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.regime h2{font-size:13px;font-weight:600;color:var(--ink-2);text-transform:none;margin-bottom:4px}
+.regime .state{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.1;display:flex;align-items:center;gap:10px}
+.regime .state .dot{width:14px;height:14px;border-radius:50%}
+.regime ul{list-style:none;margin-top:8px;color:var(--ink-2);font-size:13px;display:flex;flex-wrap:wrap;gap:4px 14px}
+.regime ul li::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--axis);margin:0 7px 3px 0}
+.regime .bench{text-align:right;font-size:12px;color:var(--ink-2)}
+.regime .bench b{display:block;font-size:17px;color:var(--ink);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-align:left}
+.tile .lbl{font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.tile .val{font-size:26px;font-weight:600;margin-top:2px}
+.tile.active{outline:2px solid var(--ink);outline-offset:-2px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{padding:7px 12px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
+.field{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0 10px;height:34px}
+.field input{border:0;background:none;width:120px;outline:none;color:var(--ink)}
+.field input[type=search]{width:140px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.stock{display:flex;flex-direction:column;gap:10px}
+.stock .top{display:flex;gap:10px;align-items:flex-start}
+.stock .rank{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:22px;padding-top:3px}
+.stock .nm{flex:1;min-width:0}
+.stock .nm b{display:block;font-size:16px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock .nm span{font-size:12px;color:var(--ink-2)}
+.stock .px{text-align:right;white-space:nowrap}
+.stock .px b{display:block;font-size:16px;font-weight:600}
+.stock .px span{font-size:12px;color:var(--ink-2)}
+.stock .px span.up{color:var(--good-text)}
+.stock .px span.dn{color:var(--crit)}
+.meter{display:flex;align-items:center;gap:10px}
+.meter .track{flex:1;height:8px;border-radius:999px;background:var(--wash);overflow:hidden}
+.meter .fill{height:100%;border-radius:999px}
+.meter .num{font-size:13px;font-weight:600;min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+.action{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.action .ic{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:12px;flex:none}
+.action .ic.warn{color:#0b0b0b}
+.instr{font-size:13px;color:var(--ink-2)}
+.action .dive{margin-left:auto;font-size:12px;font-weight:600;color:var(--series);text-decoration:none;padding:3px 8px;border-radius:999px;background:var(--wash)}
+.action .dive:hover{text-decoration:underline}
+.spark{width:100%;height:60px;display:block}
+.kv{display:flex;flex-wrap:wrap;gap:6px}
+.kv span{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--wash);color:var(--ink-2);white-space:nowrap}
+.kv span.flag{background:color-mix(in srgb,var(--serious) 18%,transparent);color:var(--ink)}
+.reasons{font-size:13px;display:grid;gap:3px}
+.reasons li{list-style:none;display:flex;gap:7px;align-items:flex-start}
+.reasons li::before{content:"";width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none}
+.reasons li.u::before{background:var(--good)}
+.reasons li.d::before{background:var(--crit)}
+.pos{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:12px;border-top:1px solid var(--border);padding-top:10px}
+.pos div span{display:block;color:var(--muted);font-size:11px}
+.pos div b{font-weight:600;font-variant-numeric:tabular-nums}
+details.news summary{cursor:pointer;font-size:13px;color:var(--ink-2);list-style:none;display:flex;align-items:center;gap:8px}
+details.news summary::-webkit-details-marker{display:none}
+details.news summary::after{content:"▸";margin-left:auto;color:var(--muted);transition:transform .15s}
+details.news[open] summary::after{transform:rotate(90deg)}
+.news ul{list-style:none;margin-top:8px;display:grid;gap:7px}
+.news li{display:flex;gap:8px;font-size:13px;align-items:flex-start}
+.news li .s{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none;background:var(--axis)}
+.news li .s.p{background:var(--good)} .news li .s.n{background:var(--crit)}
+.news li a{text-decoration:none}
+.news li a:hover{text-decoration:underline}
+.news li small{display:block;color:var(--muted);font-size:11px}
+.sentbar{display:inline-flex;gap:2px;height:6px;border-radius:999px;overflow:hidden;width:60px}
+.sentbar i{display:block;height:100%}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 8px;text-align:right;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{font-weight:600;color:var(--ink-2);font-size:12px;background:var(--surface)}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+td .act{display:inline-flex;align-items:center;gap:6px}
+td .act i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.tablewrap{overflow:auto;border-radius:var(--radius)}
+.ai p{font-size:14px;margin-bottom:8px}
+.ai h3{font-size:13px;color:var(--ink-2);font-weight:600;margin:10px 0 4px}
+.ai ul{list-style:none;display:grid;gap:4px;font-size:13px}
+.ai ul b{font-weight:600}
+.mkt h2,.ai h2,.sec h2{font-size:15px;font-weight:700;margin-bottom:8px}
+footer{margin-top:24px;font-size:12px;color:var(--muted);line-height:1.5}
+footer details{margin-top:6px}
+.hidden{display:none !important}
+.empty{text-align:center;padding:40px 16px;color:var(--ink-2)}
+@media (max-width:640px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .regime{grid-template-columns:1fr}
+  .regime .bench{text-align:left;display:flex;gap:16px}
+  .regime .state{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Daily Stock Brief</h1>
+    <span class="date" id="date">loading…</span>
+    <span class="spacer"></span>
+    <span class="chip" id="regimeChip"><span class="dot"></span><span>regime</span></span>
+    <button class="icon-btn" id="theme" title="Toggle light/dark" aria-label="Toggle theme">◐</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="banner" class="banner hidden"></div>
+</div>
+
+<main class="wrap">
+  <section class="card regime" id="regime"></section>
+
+  <section class="tiles" id="tiles" aria-label="Summary by action"></section>
+
+  <section class="card ai hidden" id="ai"></section>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="View">
+      <button id="viewCards" aria-pressed="true">Cards</button>
+      <button id="viewTable" aria-pressed="false">Table</button>
+    </div>
+    <label class="field">Capital ₹ <input id="capital" type="number" min="1000" step="1000" inputmode="numeric"></label>
+    <label class="field">Risk % <input id="risk" type="number" min="0.1" max="5" step="0.1" style="width:56px"></label>
+    <label class="field"><input id="q" type="search" placeholder="Search stock…" aria-label="Search stock"></label>
+  </div>
+
+  <section class="cards" id="cards" aria-live="polite"></section>
+  <section class="card tablewrap hidden" id="table"></section>
+
+  <section class="card mkt" id="market" style="margin-top:14px"></section>
+
+  <footer id="foot"></footer>
+</main>
+
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ACT = {
+  'Accumulate':        {cls:'good',  color:'var(--good)',   glyph:'▲'},
+  'Hold / add on dips':{cls:'hold',  color:'var(--series)', glyph:'●'},
+  'Watch':             {cls:'warn',  color:'var(--warn)',   glyph:'◆'},
+  'Avoid / reduce':    {cls:'crit',  color:'var(--crit)',   glyph:'▼'},
+};
+const REGIME = {'risk-on':'var(--good)','neutral':'var(--warn)','risk-off':'var(--crit)','unknown':'var(--muted)'};
+let brief = null, filter = 'all', view = 'cards', query = '';
+let capital = 0, riskPct = 1, maxPosPct = 10, dives = {};
+
+/* ---------- theme ---------- */
+const root = document.documentElement;
+try { const t = localStorage.getItem('sa_theme'); if (t) root.dataset.theme = t; } catch (e) {}
+$('#theme').onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('sa_theme', root.dataset.theme); } catch (e) {}
+};
+
+/* ---------- formatting ---------- */
+const fmtN = (n, d=2) => n == null ? '–' : Number(n).toLocaleString('en-IN', {maximumFractionDigits:d, minimumFractionDigits:d});
+const fmtI = n => n == null ? '–' : Number(n).toLocaleString('en-IN', {maximumFractionDigits:0});
+const fmtP = (n, d=1) => { if (n == null) return '–'; const v = +Number(n).toFixed(d) || 0; return (v > 0 ? '+' : '') + v.toFixed(d) + '%'; };
+const cur = s => s.currency === 'USD' ? '$' : (s.currency === 'INR' || !s.currency ? '₹' : s.currency + ' ');
+function ago(iso){
+  if (!iso) return '';
+  const h = Math.max(0, (Date.now() - new Date(iso).getTime()) / 36e5);
+  if (h < 1) return 'just now';
+  if (h < 24) return Math.round(h) + 'h ago';
+  return Math.round(h / 24) + 'd ago';
+}
+
+/* ---------- sparkline (single series, 2px line, 10% wash, end dot with surface ring) ---------- */
+function spark(values, w=320, h=60){
+  if (!values || values.length < 2) return '';
+  const min = Math.min(...values), max = Math.max(...values), span = (max - min) || 1;
+  const px = i => (i / (values.length - 1)) * (w - 8) + 4;
+  const py = v => h - 8 - ((v - min) / span) * (h - 16);
+  const pts = values.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`);
+  const first = py(values[0]).toFixed(1);
+  const lastX = px(values.length - 1).toFixed(1), lastY = py(values[values.length - 1]).toFixed(1);
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="60-day price trend">
+    <line x1="4" y1="${first}" x2="${w-4}" y2="${first}" stroke="var(--grid)" stroke-width="1"/>
+    <path d="M${pts.join(' L')} L${lastX},${h} L4,${h} Z" fill="var(--series)" opacity=".10"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    <circle cx="${lastX}" cy="${lastY}" r="6" fill="var(--surface)"/>
+    <circle cx="${lastX}" cy="${lastY}" r="4" fill="var(--series)"/>
+  </svg>`;
+}
+
+/* ---------- position sizing (client-side, so capital is editable) ---------- */
+function sizeFor(s){
+  const ind = s.indicators || {};
+  if (!ind.atr14 || !ind.close || !capital) return null;
+  const price = ind.close, stop = +(price - 2 * ind.atr14).toFixed(2), rps = price - stop;
+  if (rps <= 0) return null;
+  let qty = Math.floor((capital * riskPct / 100) / rps);
+  qty = Math.max(0, Math.min(qty, Math.floor((capital * maxPosPct / 100) / price)));
+  return {stop, stop_pct: -rps / price * 100, qty, value: qty * price, risk: qty * rps, target: +(price + 2 * rps).toFixed(2)};
+}
+
+/* ---------- renderers ---------- */
+function renderRegime(){
+  const r = brief.regime || {state:'unknown', notes:[]};
+  const b = brief.benchmark || {}, bi = b.indicators || {};
+  const color = REGIME[r.state] || REGIME.unknown;
+  const chip = $('#regimeChip'); chip.querySelector('.dot').style.background = color;
+  chip.lastElementChild.textContent = r.state;
+  $('#regime').innerHTML = `
+    <div>
+      <h2>Market regime</h2>
+      <div class="state"><span class="dot" style="background:${color}"></span>${esc(r.state)}
+        <span style="font-size:14px;font-weight:600;color:var(--ink-2)">· suggested exposure ${r.exposure_pct ?? '–'}%</span></div>
+      <ul>${(r.notes||[]).map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+    </div>
+    <div class="bench">
+      <div>${esc(b.symbol || 'Benchmark')}<b>${fmtN(bi.close, 0)} <span style="font-size:12px;font-weight:500;color:${(bi.change_1d_pct||0) >= 0 ? 'var(--good-text)' : 'var(--crit)'}">${fmtP(bi.change_1d_pct)}</span></b></div>
+      <div>Vol. index<b>${b.vix == null ? '–' : fmtN(b.vix, 1)}</b></div>
+      <div style="width:160px">${spark(b.spark, 160, 40)}</div>
+    </div>`;
+}
+
+function renderTiles(){
+  const counts = {};
+  for (const s of brief.stocks) counts[s.action] = (counts[s.action] || 0) + 1;
+  const keys = Object.keys(ACT);
+  $('#tiles').innerHTML = keys.map(k => `
+    <button class="tile ${filter === k ? 'active' : ''}" data-f="${esc(k)}" aria-pressed="${filter === k}">
+      <div class="lbl"><span class="action" style="font-weight:600"><span class="ic ${ACT[k].cls}" style="background:${ACT[k].color};width:16px;height:16px;font-size:9px;border-radius:5px">${ACT[k].glyph}</span></span>${esc(k)}</div>
+      <div class="val">${counts[k] || 0}</div>
+    </button>`).join('');
+  $('#tiles').querySelectorAll('.tile').forEach(t => t.onclick = () => { filter = filter === t.dataset.f ? 'all' : t.dataset.f; renderTiles(); renderList(); });
+}
+
+function visible(){
+  const q = query.trim().toLowerCase();
+  return brief.stocks.filter(s => (filter === 'all' || s.action === filter) &&
+    (!q || s.symbol.toLowerCase().includes(q) || (s.name||'').toLowerCase().includes(q)));
+}
+
+function sentBar(sent){
+  if (!sent || !sent.n) return '';
+  const t = sent.n;
+  return `<span class="sentbar" title="${sent.pos} positive · ${sent.neu} neutral · ${sent.neg} negative">
+    <i style="width:${sent.pos/t*100}%;background:var(--good)"></i><i style="width:${sent.neu/t*100}%;background:var(--axis)"></i><i style="width:${sent.neg/t*100}%;background:var(--crit)"></i></span>`;
+}
+
+function card(s){
+  const a = ACT[s.action] || ACT.Watch, ind = s.indicators || {}, p = sizeFor(s), c = cur(s);
+  const vs50 = ind.sma50 ? (ind.close / ind.sma50 - 1) * 100 : null;
+  const vs200 = ind.sma200 ? (ind.close / ind.sma200 - 1) * 100 : null;
+  return `<article class="card stock" data-sym="${esc(s.symbol)}">
+    <div class="top">
+      <span class="rank">#${s.rank}</span>
+      <div class="nm"><b>${esc(s.name)}</b><span>${esc(s.symbol)}</span></div>
+      <div class="px"><b>${c}${fmtN(ind.close)}</b><span class="${(ind.change_1d_pct||0) >= 0 ? 'up' : 'dn'}">${fmtP(ind.change_1d_pct)} today</span></div>
+    </div>
+    <div class="meter" title="Composite score 0–100: trend ${s.components?.trend?.points}/30, momentum ${s.components?.momentum?.points}/25, relative strength ${s.components?.relative_strength?.points}/15, volume ${s.components?.volume?.points}/10, news ${s.components?.news?.points}/20">
+      <div class="track"><div class="fill" style="width:${s.score}%;background:${a.color}"></div></div><span class="num">${Math.round(s.score)}</span>
+    </div>
+    <div class="action"><span class="ic ${a.cls}" style="background:${a.color}">${a.glyph}</span>${esc(s.action)}
+      ${dives[s.symbol] ? `<a class="dive" href="report.html?symbol=${encodeURIComponent(s.symbol)}" title="Six-part deep dive, data as of ${esc((dives[s.symbol].generated_at||'').slice(0,10))}">Deep dive →</a>` : ''}</div>
+    <div class="instr">${esc(s.instruction)}</div>
+    ${spark(s.spark)}
+    <div class="kv">
+      <span>RSI ${ind.rsi14 == null ? '–' : Math.round(ind.rsi14)}</span>
+      <span>${fmtP(vs50)} vs 50DMA</span>
+      <span>${fmtP(vs200)} vs 200DMA</span>
+      <span>${s.rel_60d_pct == null ? '–' : fmtP(s.rel_60d_pct)} vs index (60d)</span>
+      <span>52w range ${ind.pos_52w_pct == null ? '–' : Math.round(ind.pos_52w_pct) + '%'}</span>
+      <span>ATR ${ind.atr_pct == null ? '–' : ind.atr_pct.toFixed(1) + '%'}</span>
+      ${(s.flags||[]).map(f => `<span class="flag">⚠ ${esc(f)}</span>`).join('')}
+    </div>
+    <ul class="reasons">
+      ${(s.reasons_up||[]).map(r => `<li class="u">${esc(r)}</li>`).join('')}
+      ${(s.reasons_down||[]).map(r => `<li class="d">${esc(r)}</li>`).join('')}
+    </ul>
+    ${p ? `<div class="pos">
+      <div><span>Stop (2 ATR)</span><b>${c}${fmtN(p.stop)} <small style="color:var(--muted)">${p.stop_pct.toFixed(1)}%</small></b></div>
+      <div><span>Qty</span><b>${fmtI(p.qty)}</b></div>
+      <div><span>Outlay</span><b>${c}${fmtI(p.value)}</b></div>
+      <div><span>Risk / 2R target</span><b>${c}${fmtI(p.risk)} · ${c}${fmtN(p.target, 0)}</b></div>
+    </div>` : ''}
+    <details class="news"><summary>${(s.news||[]).length} headlines ${sentBar(s.sentiment)}</summary>
+      <ul>${(s.news||[]).map(n => `<li><span class="s ${n.sentiment > 0.1 ? 'p' : n.sentiment < -0.1 ? 'n' : ''}"></span>
+        <div><a href="${esc(n.link)}" target="_blank" rel="noopener">${esc(n.title)}</a><small>${esc(n.source || '')} ${n.source ? '·' : ''} ${ago(n.published)}</small></div></li>`).join('') || '<li>No recent headlines found.</li>'}</ul>
+    </details>
+  </article>`;
+}
+
+function renderList(){
+  const list = visible();
+  const cards = $('#cards'), table = $('#table');
+  cards.classList.toggle('hidden', view !== 'cards'); table.classList.toggle('hidden', view !== 'table');
+  if (!list.length) { cards.innerHTML = table.innerHTML = '<div class="empty">Nothing matches this filter.</div>'; return; }
+  if (view === 'cards') { cards.innerHTML = list.map(card).join(''); return; }
+  table.innerHTML = `<table><thead><tr>
+    <th>#</th><th>Stock</th><th>Price</th><th>1d</th><th>Score</th><th>Action</th><th>RSI</th><th>vs 50DMA</th><th>vs 200DMA</th><th>vs index 60d</th><th>News</th><th>Stop</th><th>Qty</th><th>Flags</th>
+    </tr></thead><tbody>${list.map(s => {
+      const a = ACT[s.action] || ACT.Watch, ind = s.indicators || {}, p = sizeFor(s), c = cur(s);
+      return `<tr><td>${s.rank}</td><td><b>${esc(s.name)}</b><br><small style="color:var(--muted)">${esc(s.symbol)}</small></td>
+        <td>${c}${fmtN(ind.close)}</td><td style="color:${(ind.change_1d_pct||0) >= 0 ? 'var(--good-text)' : 'var(--crit)'}">${fmtP(ind.change_1d_pct)}</td>
+        <td><b>${Math.round(s.score)}</b></td><td><span class="act"><i style="background:${a.color}"></i>${esc(s.action)}</span></td>
+        <td>${ind.rsi14 == null ? '–' : Math.round(ind.rsi14)}</td>
+        <td>${fmtP(ind.sma50 ? (ind.close/ind.sma50-1)*100 : null)}</td><td>${fmtP(ind.sma200 ? (ind.close/ind.sma200-1)*100 : null)}</td>
+        <td>${s.rel_60d_pct == null ? '–' : fmtP(s.rel_60d_pct)}</td>
+        <td>${s.sentiment?.n ? `${s.sentiment.pos}▲ ${s.sentiment.neg}▼` : '–'}</td>
+        <td>${p ? c + fmtN(p.stop) : '–'}</td><td>${p ? fmtI(p.qty) : '–'}</td>
+        <td style="white-space:normal;text-align:left;max-width:220px;font-size:12px;color:var(--ink-2)">${(s.flags||[]).map(esc).join(', ')}</td></tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function renderAI(){
+  const ai = brief.ai; const el = $('#ai');
+  if (!ai || !ai.market_note) { el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  el.innerHTML = `<h2>Analyst note</h2><p>${esc(ai.market_note)}</p>
+    ${ai.top_ideas?.length ? `<h3>Ideas worth your research time</h3><ul>${ai.top_ideas.map(i => `<li><b>${esc(i.symbol)}</b> — ${esc(i.note)}</li>`).join('')}</ul>` : ''}
+    ${ai.avoid?.length ? `<h3>Avoid</h3><ul>${ai.avoid.map(i => `<li><b>${esc(i.symbol)}</b> — ${esc(i.note)}</li>`).join('')}</ul>` : ''}
+    ${ai.caution ? `<h3>Caution</h3><p style="font-size:13px;color:var(--ink-2)">${esc(ai.caution)}</p>` : ''}
+    <small style="color:var(--muted)">Written by ${esc(ai.model || 'Claude')} from the scores and headlines above. It can be wrong.</small>`;
+}
+
+function renderMarket(){
+  const n = brief.market_news || [], ms = brief.market_sentiment;
+  $('#market').innerHTML = `<h2>Market headlines ${sentBar(ms)}</h2>
+    <div class="news"><ul>${n.map(x => `<li><span class="s ${x.sentiment > 0.1 ? 'p' : x.sentiment < -0.1 ? 'n' : ''}"></span>
+      <div><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a><small>${esc(x.source||'')} ${x.source ? '·' : ''} ${ago(x.published)}</small></div></li>`).join('') || '<li>No headlines.</li>'}</ul></div>`;
+}
+
+function renderFoot(){
+  const errs = brief.errors || [];
+  $('#foot').innerHTML = `<div>${esc(brief.disclaimer || '')}</div>
+    <div>Generated ${new Date(brief.generated_at).toLocaleString('en-IN')} · benchmark ${esc(brief.config?.benchmark||'')} · ${brief.stocks.length} stocks scored.</div>
+    ${errs.length ? `<details><summary>${errs.length} data errors this run</summary><ul style="margin:6px 0 0 16px">${errs.map(e => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}`;
+}
+
+function banner(kind, html){ const b = $('#banner'); b.className = 'banner ' + kind; b.innerHTML = html; }
+
+function renderAll(){
+  $('#date').textContent = new Date(brief.date + 'T00:00:00').toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+  renderRegime(); renderTiles(); renderAI(); renderList(); renderMarket(); renderFoot();
+}
+
+/* ---------- controls ---------- */
+$('#viewCards').onclick = () => { view = 'cards'; $('#viewCards').setAttribute('aria-pressed','true'); $('#viewTable').setAttribute('aria-pressed','false'); renderList(); };
+$('#viewTable').onclick = () => { view = 'table'; $('#viewTable').setAttribute('aria-pressed','true'); $('#viewCards').setAttribute('aria-pressed','false'); renderList(); };
+$('#q').oninput = e => { query = e.target.value; renderList(); };
+$('#capital').onchange = e => { capital = +e.target.value || capital; try { localStorage.setItem('sa_capital', capital); } catch (x) {} renderList(); };
+$('#risk').onchange = e => { riskPct = Math.min(5, Math.max(0.1, +e.target.value || riskPct)); e.target.value = riskPct; try { localStorage.setItem('sa_risk', riskPct); } catch (x) {} renderList(); };
+
+/* ---------- load ---------- */
+async function load(){
+  const params = new URLSearchParams(location.search);
+  const custom = params.get('brief');
+  const candidates = custom ? [custom] : ['data/latest.json', 'data/sample-brief.json'];
+  let lastErr = null;
+  for (const url of candidates) {
+    try {
+      const r = await fetch(url, {cache:'no-store'});
+      if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+      brief = await r.json();
+      brief.stocks = brief.stocks || [];
+      const cfg = brief.config || {};
+      capital = cfg.capital || 500000; riskPct = cfg.risk_per_trade_pct || 1; maxPosPct = cfg.max_position_pct || 10;
+      try { capital = +localStorage.getItem('sa_capital') || capital; riskPct = +localStorage.getItem('sa_risk') || riskPct; } catch (e) {}
+      $('#capital').value = capital; $('#risk').value = riskPct;
+      try { const di = await fetch('data/deepdive/index.json', {cache:'no-store'}); if (di.ok) dives = await di.json(); } catch (e) { dives = {}; }
+      if (brief.sample) banner('warn', `<b>Sample data.</b><span>This is a synthetic demo brief so you can see the layout. Run <code>python3 analyze.py</code> or enable the GitHub Actions schedule to replace it with a live brief.</span>`);
+      else if (url !== candidates[0] && !custom) banner('warn', `<b>Showing fallback.</b><span>${esc(candidates[0])} could not be loaded.</span>`);
+      else {
+        const ageH = (Date.now() - new Date(brief.generated_at).getTime()) / 36e5;
+        if (ageH > 72) banner('warn', `<b>Stale brief.</b><span>Generated ${Math.round(ageH/24)} days ago. Check the Actions tab if the schedule should have run.</span>`);
+        else $('#banner').classList.add('hidden');
+      }
+      renderAll();
+      return;
+    } catch (e) { lastErr = e; }
+  }
+  $('#date').textContent = '';
+  banner('err', `<b>No brief found.</b><span>Could not load ${candidates.map(esc).join(' or ')} (${esc(lastErr && lastErr.message)}). If you opened this file directly, serve the folder instead: <code>python3 -m http.server 8080</code> then open <code>http://localhost:8080/</code>.</span>`);
+}
+load();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deep Dive Report</title>
+<meta name="description" content="Six-part equity deep dive grounded in multi-period financials, valuation, peers, risks and price data.">
+<meta name="color-scheme" content="light dark">
+<style>
+:root{color-scheme:light;--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
+  --border:rgba(11,11,11,.10);--wash:rgba(11,11,11,.04);--series:#2a78d6;--good:#0ca30c;--good-text:#006300;--warn:#fab219;--serious:#ec835a;--crit:#d03b3b;--radius:14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink-2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;
+  --border:rgba(255,255,255,.10);--wash:rgba(255,255,255,.05);--series:#3987e5;--good-text:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink-2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;
+  --border:rgba(255,255,255,.10);--wash:rgba(255,255,255,.05);--series:#3987e5;--good-text:#0ca30c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--page);color:var(--ink);line-height:1.5;font-size:15px;padding-bottom:48px}
+a{color:inherit}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:20;background:var(--page);border-bottom:1px solid var(--border);padding:calc(10px + env(safe-area-inset-top)) 0 10px}
+header .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header a.back{font-size:13px;color:var(--ink-2);text-decoration:none}
+header h1{font-size:18px;font-weight:700;letter-spacing:-.01em;flex:1;min-width:0}
+header small{color:var(--ink-2);font-size:12px}
+.icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center}
+main{padding-top:14px;display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;min-width:0}
+main>*{min-width:0}
+.banner{padding:10px 14px;border-radius:10px;font-size:13px;border:1px solid color-mix(in srgb,var(--warn) 50%,transparent);background:var(--surface)}
+.banner.err{border-color:color-mix(in srgb,var(--crit) 50%,transparent)}
+.hero{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.hero .px{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hero .px small{font-size:14px;font-weight:500;color:var(--ink-2);margin-left:6px}
+.hero .meta{font-size:13px;color:var(--ink-2);margin-top:4px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tile{background:var(--wash);border-radius:12px;padding:10px 12px}
+.tile .lbl{font-size:12px;color:var(--ink-2)}
+.tile .val{font-size:20px;font-weight:600}
+.chart{width:100%;height:220px;display:block}
+.levels{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.levels span{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--wash);color:var(--ink-2)}
+.levels span.r{border-left:3px solid var(--crit)} .levels span.s{border-left:3px solid var(--good)}
+.verdict{border-left:4px solid var(--series);padding:4px 0 4px 14px;font-size:16px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:12px}
+.tabs button{padding:8px 12px;font-size:13px;font-weight:600;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--ink)}
+.panel{display:none}.panel.on{display:block}
+.md h1,.md h2,.md h3{font-size:15px;font-weight:700;margin:14px 0 6px}
+.md h3{font-size:14px;color:var(--ink-2)}
+.md p{margin:0 0 8px}
+.md ul{margin:0 0 8px 18px}.md li{margin:2px 0}
+.md table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;margin:6px 0 12px;display:block;overflow:auto}
+.md th,.md td{padding:5px 8px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap}
+.md th:first-child,.md td:first-child{text-align:left}
+.md th{font-weight:600;color:var(--ink-2)}
+.md code{font-size:12px;background:var(--wash);padding:1px 4px;border-radius:4px}
+details{border-top:1px solid var(--border);margin-top:12px;padding-top:10px}
+summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2)}
+.risk{display:grid;grid-template-columns:140px 1fr;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--grid);font-size:13.5px}
+.risk b{grid-column:1/-1;font-size:15px}
+.risk .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.risk .t{display:inline-block;font-size:11px;padding:2px 7px;border-radius:999px;background:var(--wash);color:var(--ink-2);margin-left:6px;text-transform:none;letter-spacing:0}
+.prompt{border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.prompt .h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.prompt .h b{flex:1;font-size:15px}
+.copy{font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface)}
+.prompt p.q{font-size:14px;margin-bottom:8px}
+footer{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
+.hidden{display:none!important}
+@media (max-width:640px){.risk{grid-template-columns:1fr}.hero .px{font-size:28px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="back" href="./">← Brief</a>
+  <h1 id="title">Deep dive</h1>
+  <small id="when"></small>
+  <button class="icon-btn" id="theme" title="Toggle light/dark" aria-label="Toggle theme">◐</button>
+</div></header>
+<main class="wrap">
+  <div id="banner" class="banner hidden"></div>
+  <section class="card hero" id="hero"></section>
+  <section class="card" id="chartCard"></section>
+  <section class="card" id="verdict"></section>
+  <section class="card" id="sections"></section>
+  <section class="card" id="monitor"></section>
+  <footer id="foot"></footer>
+</main>
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const root = document.documentElement;
+try { const t = localStorage.getItem('sa_theme'); if (t) root.dataset.theme = t; } catch (e) {}
+$('#theme').onclick = () => { const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark'; try { localStorage.setItem('sa_theme', root.dataset.theme); } catch (e) {} };
+
+/* Minimal, safe Markdown: escape first, then headings, bold/italic, bullets, tables, paragraphs. */
+function inline(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(^|\W)_(.+?)_(?=\W|$)/g,'$1<i>$2</i>').replace(/`(.+?)`/g,'<code>$1</code>'); }
+function md(src){
+  const lines = String(src || '').replace(/\r/g,'').split('\n'); let out = '', i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^\s*$/.test(l)) { i++; continue; }
+    let m;
+    if ((m = l.match(/^(#{1,6})\s+(.*)/))) { out += `<h${Math.min(3, m[1].length)}>${inline(m[2])}</h${Math.min(3, m[1].length)}>`; i++; continue; }
+    if (/^\s*\|/.test(l)) {
+      const rows = []; while (i < lines.length && /^\s*\|/.test(lines[i])) { rows.push(lines[i]); i++; }
+      const cells = r => r.trim().replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+      const head = cells(rows[0]); const body = rows.slice(1).filter(r => !/^\s*\|?\s*:?-{2,}/.test(r)).map(cells);
+      out += '<table><thead><tr>' + head.map(h => `<th>${inline(h)}</th>`).join('') + '</tr></thead><tbody>' +
+        body.map(r => '<tr>' + r.map(c => `<td>${inline(c)}</td>`).join('') + '</tr>').join('') + '</tbody></table>'; continue;
+    }
+    if (/^\s*([-*•]|\d+[.)])\s+/.test(l)) {
+      out += '<ul>'; while (i < lines.length && /^\s*([-*•]|\d+[.)])\s+/.test(lines[i])) { out += `<li>${inline(lines[i].replace(/^\s*([-*•]|\d+[.)])\s+/,''))}</li>`; i++; } out += '</ul>'; continue;
+    }
+    const para = []; while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6}\s|\s*\||\s*([-*•]|\d+[.)])\s)/.test(lines[i])) { para.push(lines[i]); i++; }
+    out += `<p>${inline(para.join(' '))}</p>`;
+  }
+  return out;
+}
+const fmt = (v, d=1, s='') => v == null ? '–' : Number(v).toLocaleString('en-IN', {maximumFractionDigits:d, minimumFractionDigits:d}) + s;
+const money = (v, cur) => v == null ? '–' : cur === 'INR' ? (Math.abs(v) >= 1e12 ? '₹' + (v/1e12).toFixed(2) + ' lakh Cr' : '₹' + Math.round(v/1e7).toLocaleString('en-IN') + ' Cr') : (Math.abs(v) >= 1e9 ? (v/1e9).toFixed(1) + ' B' : (v/1e6).toFixed(0) + ' M');
+
+function priceChart(pack){
+  const c = pack.spark_1y || [], lv = pack.technicals.levels, w = 900, h = 220;
+  if (c.length < 2) return '';
+  const all = c.concat(lv.support, lv.resistance).filter(x => x != null);
+  const min = Math.min(...all) * 0.99, max = Math.max(...all) * 1.01, span = max - min || 1;
+  const px = i => 8 + i / (c.length - 1) * (w - 16), py = v => h - 18 - (v - min) / span * (h - 36);
+  const pts = c.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ');
+  const line = (v, cls) => `<line x1="8" x2="${w-8}" y1="${py(v).toFixed(1)}" y2="${py(v).toFixed(1)}" stroke="${cls === 's' ? 'var(--good)' : 'var(--crit)'}" stroke-width="1" opacity=".7"/>
+    <text x="${w-10}" y="${(py(v)-3).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--muted)">${fmt(v,0)}</text>`;
+  const ticks = [.08, .5, .92].map(f => { const v = min + f * span; return `<line x1="8" x2="${w-8}" y1="${py(v).toFixed(1)}" y2="${py(v).toFixed(1)}" stroke="var(--grid)" stroke-width="1"/><text x="8" y="${(py(v)-3).toFixed(1)}" font-size="10" fill="var(--muted)">${fmt(v,0)}</text>`; }).join('');
+  const d0 = pack.spark_1y_dates?.[0] || '', d1 = pack.spark_1y_dates?.[c.length-1] || '';
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="One-year closing price with support and resistance">
+    ${ticks}${lv.support.map(v => line(v,'s')).join('')}${lv.resistance.map(v => line(v,'r')).join('')}
+    <polyline points="${pts}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+    <text x="8" y="${h-4}" font-size="10" fill="var(--muted)">${d0}</text><text x="${w-8}" y="${h-4}" text-anchor="end" font-size="10" fill="var(--muted)">${d1}</text></svg>`;
+}
+
+function render(doc){
+  const p = doc.pack, v = p.valuation, r = doc.report, cur = p.currency;
+  const ind = p.technicals.indicators;
+  document.title = `${p.name} · Deep dive`;
+  $('#title').textContent = `${p.name} (${p.symbol})`;
+  $('#when').textContent = 'data as of ' + new Date(p.generated_at).toLocaleString('en-IN');
+  $('#hero').innerHTML = `
+    <div style="flex:1;min-width:220px"><div class="px">${cur === 'INR' ? '₹' : ''}${fmt(v.price,2)}<small style="color:${(ind.change_1d_pct||0)>=0?'var(--good-text)':'var(--crit)'}">${fmt(ind.change_1d_pct,2,'%')} today</small></div>
+      <div class="meta">${esc(cur)} · ${p.financial_company ? 'Bank / lender metrics' : 'Industrial metrics'} · sources: ${p.sources.map(esc).join(', ')}</div></div>
+    <div class="tiles" style="flex:2;min-width:260px">
+      <div class="tile"><div class="lbl">Market cap</div><div class="val">${money(v.market_cap, cur)}</div></div>
+      <div class="tile"><div class="lbl">P/E (TTM)</div><div class="val">${fmt(v.pe_ttm,1,'x')}</div></div>
+      <div class="tile"><div class="lbl">P/B</div><div class="val">${fmt(v.pb,2,'x')}</div></div>
+      ${p.financial_company ? `<div class="tile"><div class="lbl">ROE (TTM)</div><div class="val">${fmt(v.roe_ttm_pct,1,'%')}</div></div>`
+                            : `<div class="tile"><div class="lbl">EV/EBITDA</div><div class="val">${fmt(v.ev_ebitda_ttm,1,'x')}</div></div>
+                               <div class="tile"><div class="lbl">FCF yield</div><div class="val">${fmt(v.fcf_yield_pct,2,'%')}</div></div>`}
+      <div class="tile"><div class="lbl">1-year return</div><div class="val">${fmt(p.technicals.ret_1y_pct,1,'%')}</div></div>
+    </div>`;
+  const lv = p.technicals.levels;
+  $('#chartCard').innerHTML = `<h2 style="font-size:15px;margin-bottom:6px">One year, with swing support and resistance</h2>${priceChart(p)}
+    <div class="levels">${lv.support.map(s => `<span class="s">support ${fmt(s,0)}</span>`).join('')}${lv.resistance.map(s => `<span class="r">resistance ${fmt(s,0)}</span>`).join('')}
+      <span>52w ${fmt(lv.low_52w,0)} – ${fmt(lv.high_52w,0)}</span><span>RSI ${fmt(ind.rsi14,0)}</span><span>${fmt(ind.sma200 ? (ind.close/ind.sma200-1)*100 : null,1,'%')} vs 200DMA</span></div>`;
+
+  if (r && (r.verdict || r.business)) {
+    $('#verdict').innerHTML = r.verdict ? `<div class="verdict">${esc(r.verdict)}</div><div style="font-size:12px;color:var(--muted);margin-top:8px">Written by ${esc(r.model || 'Claude')} from the data below. Judgement, not fact. Verify before acting.</div>` : '';
+    $('#verdict').classList.toggle('hidden', !r.verdict);
+    const secs = doc.prompts.map(pr => ({key: pr.key, title: pr.title, body: pr.key === 'risks' ? risksHtml(r.risks) : md(r[pr.key] || '_Not returned._'), data: pr.data}));
+    $('#sections').innerHTML = `<div class="tabs" role="tablist">${secs.map((s, i) => `<button role="tab" aria-selected="${i===0}" data-k="${s.key}">${esc(s.title)}</button>`).join('')}</div>` +
+      secs.map((s, i) => `<div class="panel md ${i===0?'on':''}" data-k="${s.key}">${s.body}<details><summary>Data this section was given</summary><div class="md">${md(s.data)}</div></details></div>`).join('');
+    $('#monitor').innerHTML = `<h2 style="font-size:15px;margin-bottom:8px">Numbers to monitor</h2>` + (Array.isArray(r.monitor) && r.monitor.length ?
+      `<div class="md"><table><thead><tr><th>Metric</th><th>Now</th><th>Why it matters</th><th>Act if</th></tr></thead><tbody>${r.monitor.map(m => `<tr><td><b>${esc(m.metric)}</b></td><td>${esc(m.current)}</td><td style="white-space:normal;text-align:left">${esc(m.why)}</td><td style="white-space:normal;text-align:left">${esc(m.threshold)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="md">Not returned.</p>');
+  } else {
+    $('#banner').classList.remove('hidden');
+    $('#banner').innerHTML = `<b>No AI report for this run.</b> Add an <code>ANTHROPIC_API_KEY</code> secret to generate one, or copy any of the six prompts below (each is pre-filled with the real data) into an assistant.`;
+    $('#verdict').classList.add('hidden');
+    $('#sections').innerHTML = doc.prompts.map((pr, i) => `<div class="prompt" id="p${i}">
+      <div class="h"><b>${i+1}. ${esc(pr.title)}</b><button class="copy" data-i="${i}">Copy prompt + data</button></div>
+      <p class="q">${esc(pr.prompt)}</p><details open><summary>Data</summary><div class="md">${md(pr.data)}</div></details></div>`).join('');
+    $('#monitor').classList.add('hidden');
+    document.querySelectorAll('.copy').forEach(b => b.onclick = async () => { const pr = doc.prompts[+b.dataset.i];
+      try { await navigator.clipboard.writeText(pr.prompt + '\n\n' + pr.data); b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy prompt + data', 1500); } catch (e) { b.textContent = 'Select and copy manually'; } });
+  }
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x === b));
+    document.querySelectorAll('.panel').forEach(x => x.classList.toggle('on', x.dataset.k === b.dataset.k)); });
+  $('#foot').innerHTML = esc(doc.disclaimer || '') + (r && r.usage ? ` · ${r.usage.input_tokens.toLocaleString()} in / ${r.usage.output_tokens.toLocaleString()} out tokens` : '');
+}
+function risksHtml(risks){
+  if (!Array.isArray(risks) || !risks.length) return '<p>Not returned.</p>';
+  return risks.map(k => `<div class="risk"><b>${esc(k.name)}<span class="t">${esc(k.type || '')}</span></b>
+    <span class="k">Trigger</span><span>${esc(k.trigger)}</span><span class="k">Impact</span><span>${esc(k.impact)}</span><span class="k">Watch</span><span>${esc(k.watch)}</span></div>`).join('');
+}
+async function load(){
+  const sym = new URLSearchParams(location.search).get('symbol');
+  try {
+    if (!sym) throw new Error('No symbol given. Open this page as report.html?symbol=RELIANCE.NS');
+    const idx = await (await fetch('data/deepdive/index.json', {cache:'no-store'})).json();
+    const entry = idx[sym] || idx[sym.toUpperCase()];
+    if (!entry) throw new Error(`No deep dive for ${sym} yet. Run: python3 deepdive.py ${sym}`);
+    const doc = await (await fetch('data/deepdive/' + entry.file, {cache:'no-store'})).json();
+    render(doc);
+  } catch (e) {
+    $('#banner').className = 'banner err'; $('#banner').textContent = e.message;
+    ['#hero','#chartCard','#verdict','#sections','#monitor'].forEach(s => $(s).classList.add('hidden'));
+  }
+}
+load();
+})();
+</script>
+</body>
+</html>

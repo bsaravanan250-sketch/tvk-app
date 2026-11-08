@@ -1,0 +1,50 @@
+name: Daily stock brief
+
+on:
+  schedule:
+    # 08:45 IST (03:15 UTC) Monday-Friday, 30 minutes before NSE opens.
+    # GitHub cron only fires on the repository's default branch.
+    - cron: "15 3 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-stock-brief
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run analyzer
+        working-directory: stock-analyzer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            pip install -q anthropic
+            python3 analyze.py --ai
+          else
+            python3 analyze.py
+          fi
+
+      - name: Commit and push the brief
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stock-analyzer/data/*.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Daily stock brief $(TZ=Asia/Kolkata date +%F)"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"

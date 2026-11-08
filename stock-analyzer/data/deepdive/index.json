@@ -1,0 +1,14 @@
+{
+ "RELIANCE.NS": {
+  "file": "RELIANCE.NS.json",
+  "name": "Reliance Industries",
+  "generated_at": "2026-11-08T01:59:32.259651+00:00",
+  "has_report": false
+ },
+ "HDFCBANK.NS": {
+  "file": "HDFCBANK.NS.json",
+  "name": "HDFC Bank",
+  "generated_at": "2026-11-08T01:59:37.357638+00:00",
+  "has_report": false
+ }
+}
