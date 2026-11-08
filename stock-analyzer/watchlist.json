@@ -1,0 +1,31 @@
+{
+  "_comment": "Edit freely. Yahoo Finance symbols: NSE = TICKER.NS, BSE = TICKER.BO, US = plain ticker. 'news' is the search phrase used for headlines.",
+  "market": "IN",
+  "benchmark": "^NSEI",
+  "volatility_index": "^INDIAVIX",
+  "capital": 500000,
+  "risk_per_trade_pct": 1.0,
+  "max_position_pct": 10.0,
+  "stocks": [
+    {"symbol": "RELIANCE.NS",   "name": "Reliance Industries",  "news": "Reliance Industries"},
+    {"symbol": "HDFCBANK.NS",   "name": "HDFC Bank",            "news": "HDFC Bank"},
+    {"symbol": "ICICIBANK.NS",  "name": "ICICI Bank",           "news": "ICICI Bank"},
+    {"symbol": "INFY.NS",       "name": "Infosys",              "news": "Infosys"},
+    {"symbol": "TCS.NS",        "name": "Tata Consultancy",     "news": "TCS Tata Consultancy Services"},
+    {"symbol": "BHARTIARTL.NS", "name": "Bharti Airtel",        "news": "Bharti Airtel"},
+    {"symbol": "LT.NS",         "name": "Larsen & Toubro",      "news": "Larsen Toubro L&T"},
+    {"symbol": "SBIN.NS",       "name": "State Bank of India",  "news": "SBI State Bank of India"},
+    {"symbol": "ITC.NS",        "name": "ITC",                  "news": "ITC Ltd"},
+    {"symbol": "AXISBANK.NS",   "name": "Axis Bank",            "news": "Axis Bank"},
+    {"symbol": "KOTAKBANK.NS",  "name": "Kotak Mahindra Bank",  "news": "Kotak Mahindra Bank"},
+    {"symbol": "HINDUNILVR.NS", "name": "Hindustan Unilever",   "news": "Hindustan Unilever HUL"},
+    {"symbol": "MARUTI.NS",     "name": "Maruti Suzuki",        "news": "Maruti Suzuki"},
+    {"symbol": "TATAMOTORS.NS", "name": "Tata Motors",          "news": "Tata Motors"},
+    {"symbol": "SUNPHARMA.NS",  "name": "Sun Pharma",           "news": "Sun Pharma"},
+    {"symbol": "TITAN.NS",      "name": "Titan Company",        "news": "Titan Company"},
+    {"symbol": "BAJFINANCE.NS", "name": "Bajaj Finance",        "news": "Bajaj Finance"},
+    {"symbol": "ADANIENT.NS",   "name": "Adani Enterprises",    "news": "Adani Enterprises"},
+    {"symbol": "HCLTECH.NS",    "name": "HCL Technologies",     "news": "HCL Technologies"},
+    {"symbol": "NTPC.NS",       "name": "NTPC",                 "news": "NTPC Ltd"}
+  ]
+}
