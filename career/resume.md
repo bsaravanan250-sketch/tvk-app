@@ -5,8 +5,9 @@
 
 ## Header
 - Name: Saravanan B
+- LinkedIn: linkedin.com/in/saravanan-b
 - Location: Chennai, India
-- Open to relocation: TODO (CV filename says Europe; confirm which countries)
+- Open to relocation: Germany, Netherlands, Luxembourg, Poland. EU Blue Card eligible.
 - Remote policy you will accept: TODO
 - Current title: Supply Chain Analyst, Ford Global Technical & Business Center
 - Total years of professional experience: 8 (Apr 2018 to present)
@@ -37,18 +38,13 @@ Stack: VBA, Power Automate, SQL / Google BigQuery, Power Query, Alteryx, Tableau
 - Vendor sourcing, negotiation, SOB fixing, capacity evaluation; initiated Hyundai WIA returnable packing programme; KIA CKD export costing.
 
 ## Automation projects (shipped at Ford, production evidence)
-- Validation Tool (VBA): 1-week manual cycle to 1 hour, ~40x.
-- RPA robot replacement (Power Automate): legacy bot rebuilt as cloud flow, licensing and maintenance eliminated.
-- PPAP supplier chase (Power Automate): staged per site code, auto-booked Teams escalations in supplier time zones.
-- Supplier meeting auto-scheduler (Power Automate): 12 countries, time-zone lookup, slot fallback.
-- Resilinc recommit auto-mail (Power Automate): event-driven, 48-hour reminder cycle, logging.
-- EWM KPI bowler weekly mail (Power Automate): per-plant KPI with reason capture.
-- DB2 to BigQuery KPI migration (SQL): rebuilt ASN-receipt queries, weekly receiving-method-mix KPI per plant.
-- EWM cost calculation tool: annual savings per plant across five cost levers, per-plant dashboard.
-- Container calculation tool; Raw material calculation tool.
-- Interactive mapping and weather event tracker (HTML): supplier and plant geospatial risk.
-- Address validator (HTML + Google Places API): validate, standardise, geocode supplier addresses at scale.
-- Comments analyzer, Impact tracker, Auto mail response picker, Mail ID catcher (VBA / Power Automate).
+- Validation Tool (VBA): 1-week manual cycle to 1 hour, ~40x, about 35 hrs/week saved.
+- RPA robot replacement (Power Automate): legacy bot rebuilt as cloud flow, licensing and maintenance eliminated, about 4 hrs/week saved.
+- Supplier meeting auto-scheduler (Power Automate): 12 countries, time-zone lookup, slot fallback, about 5 hrs/week saved.
+- DB2 to BigQuery KPI migration (SQL): rebuilt ASN-receipt queries, weekly receiving-method-mix KPI per plant, about 6 hrs/week saved.
+- EWM cost calculation tool: annual savings per plant across five cost levers, per-plant dashboard, about 4 hrs/week saved.
+- Address validator (HTML + Google Places API): validate, standardise, geocode supplier addresses at scale, about 6 hrs/week saved.
+- Ten further tools: PPAP supplier chase, Resilinc recommit auto-mail, EWM KPI bowler mail, container calculator, raw material calculator, weather event tracker, comments analyzer, impact tracker, auto mail response picker, mail ID catcher.
 
 ## Projects (public)
 ### TVK T.Nagar constituency services app — solo — 2025
