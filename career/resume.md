@@ -46,6 +46,11 @@ Stack: VBA, Power Automate, SQL / Google BigQuery, Power Query, Alteryx, Tableau
 - Address validator (HTML + Google Places API): validate, standardise, geocode supplier addresses at scale, about 6 hrs/week saved.
 - Ten further tools: PPAP supplier chase, Resilinc recommit auto-mail, EWM KPI bowler mail, container calculator, raw material calculator, weather event tracker, comments analyzer, impact tracker, auto mail response picker, mail ID catcher.
 
+## Power Platform work (reported 2026-11-08, NOT yet on the CV; needs numbers before it counts)
+- Power Apps: built [canvas / model-driven?] app(s) for [which process], used by [N] users, backed by [SharePoint list / Dataverse / Excel]. [add number: users, records, hours saved]
+- SharePoint: list(s) populated and updated by a mail-triggered Power Automate flow (Outlook trigger to SharePoint). [add: what the mail contains, volume per week]
+- Power BI: dataset refresh / report distribution automated with Power Automate. [add: report name, audience, cadence]
+
 ## Projects (public)
 ### TVK T.Nagar constituency services app — solo — 2025
 - Repo: https://github.com/bsaravanan250-sketch/tvk-app  Live: TODO
@@ -53,8 +58,8 @@ Stack: VBA, Power Automate, SQL / Google BigQuery, Power Query, Alteryx, Tableau
 - AI-assisted development (Claude) for scaffolding; owned data model, roles, UX and bug fixing.
 
 ## Skills (production evidence only)
-- Automation: VBA (advanced), Power Automate, Power Query, Alteryx, Excel (advanced)
-- Data: SQL, Google BigQuery, Tableau (certified 2022)
+- Automation: VBA (advanced), Power Automate (cloud flows, Outlook and SharePoint connectors), Power Apps [provisional], SharePoint Lists [provisional], Power Query, Alteryx, Excel (advanced)
+- Data: SQL, Google BigQuery, Tableau (certified 2022), Power BI [provisional, refresh automation only unless reports were authored]
 - Web: HTML/CSS/JS (internal tools, PWA), Google Places API
 - ERP: SAP EWM business-side rollout (requirements, process mapping, test cases, UAT, go-live). No configuration experience.
 - Domain: packaging development (OEM, Tier-1, CKD/SKD), P&F and export costing, procurement, strategic sourcing, N-tier supplier risk, inventory control, obsolescence, process design and UAT

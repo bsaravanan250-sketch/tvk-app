@@ -144,3 +144,37 @@ Four things hold every post down, and only one of them is about the CV.
 **Next run.** Sample Germany and the Netherlands directly, and add ten India
 roles from the user's own searches. Re-score after the Power Apps project
 ships.
+
+
+---
+
+# Run 1b addendum, 2026-11-08: Power Apps, SharePoint and Power BI evidence reported
+
+The candidate reports building Power Apps, mail-triggered flows writing to
+SharePoint, and Power BI refresh automation. None of this is on CV v3. Scores
+below assume it is added with user counts and hours saved. Until then the run 1
+scores stand.
+
+| # | Role | Company | Skills /40 | Seniority /25 | Domain /20 | Practical /15 | Total | Was | Verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| 7 | Power Platform Specialist (TSL) | emagine | 35 | 15 | 16 | 4 | **70** | 58 | MAYBE |
+| 1 | Compliance Process & Solutions Specialist | DSV | 36 | 15 | 12 | 7 | **70** | 68 | MAYBE |
+| 10 | Power Platform Specialist | Antal | 35 | 15 | 10 | 6 | **66** | 54 | MAYBE |
+| 13 | Power Platform Developer | emagine Pune | 29 | 15 | 8 | 11 | **63** | 52 | MAYBE |
+| 6 | Senior RPA Engineer (Power Automate) | SCALO | 26 | 18 | 10 | 6 | **60** | 58 | MAYBE |
+| 17 | Regular Power Platform Developer | Sii | 26 | 12 | 8 | 6 | 52 (cap 60) | 40 | SKIP |
+
+**Result after addendum: 0 APPLY, 7 MAYBE, 13 SKIP.**
+
+What still blocks APPLY on the Power Platform roles is Practical fit, not
+skills: three of the five are B2B contracts in Poland that will not sponsor,
+and the two that could employ (emagine Pune, SCALO) hide salary and SCALO
+posts in Polish. The emagine Pune role is the one India posting in this sample
+worth a direct application once the CV carries the Power Apps evidence.
+
+**Required before any of these scores count.** For each item, three facts:
+what it does, who uses it and how many, what it replaced and the hours or
+cycle time saved. A Power App with no user count reads as a tutorial exercise.
+Governance, ALM and Dataverse are also asked for by four of the five posts;
+say honestly whether any of the Ford apps used managed solutions, environments
+or Dataverse, because interviewers will probe exactly there.
