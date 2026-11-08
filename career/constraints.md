@@ -1,9 +1,9 @@
 # Constraints used by the head-hunter skill
 
 - Base location: Chennai, India
-- Relocation: 
+- Relocation: TODO (Europe per CV filename)
 - Remote policy accepted: 
 - Minimum annual salary (INR): 
 - Notice period: 
-- Work authorisation: Indian citizen, no visa sponsorship needed in India
+- Work authorisation: Indian citizen; needs sponsorship outside India
 - Will not consider: 
