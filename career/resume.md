@@ -15,7 +15,7 @@
 - Work authorisation: Indian citizen. Europe requires sponsorship (EU Blue Card eligible on degree + experience if salary threshold met).
 
 ## Target
-- Target titles: TODO. Candidates from the evidence: SAP EWM functional analyst/consultant; Supply Chain Analytics / Systems Analyst; Power Platform / Process Automation Developer
+- Target titles: Supply Chain Systems / Business Analyst (SAP EWM, S/4HANA logistics); Logistics Process Analyst / Key User; Supply Chain Analytics Analyst; Power Platform / Process Automation Developer. NOT SAP EWM functional consultant until C_S4EWM certification is held.
 - Target industries: Automotive OEM and Tier-1, Logistics / 3PL, SAP consulting
 - Deal-breakers: TODO
 
@@ -24,7 +24,7 @@
 ### Supply Chain Analyst — Ford Global Technical & Business Center — Chennai — Mar 2021 to present
 Stack: VBA, Power Automate, SQL / Google BigQuery, Power Query, Alteryx, Tableau, HTML, SAP EWM
 - Restructured and automated supplier onboarding on the Ford Portal; removed manual handoffs, now a fully automated pipeline. [add number: suppliers/yr, days cut]
-- SAP EWM rollout: warehouse process mapping (inbound, outbound, internal movements), functional-spec alignment, UAT, go-live support. [clarify: configuration or business-side only]
+- SAP EWM rollout, business-process side (no system configuration): froze requirements with plant stakeholders, mapped inbound/outbound/internal warehouse processes, aligned functional specs with the SAP team, developed test cases, led UAT, supported go-live. [add number: plants, test cases, users trained]
 - $0.7M packaging cost savings at Struandale Engine Plant (South Africa); 100% elimination of single-use plastic packaging.
 - Led supplier coordination and alternative sourcing during COVID-19 and China lockdown; built Supplier Risk Analysis scorecard; mapped N-tier suppliers for semiconductor shortage.
 - Tableau dashboard auto-generating semiconductor value-stream reports for senior management; authored documentation for 4 critical processes.
@@ -59,7 +59,7 @@ Stack: VBA, Power Automate, SQL / Google BigQuery, Power Query, Alteryx, Tableau
 - Automation: VBA (advanced), Power Automate, Power Query, Alteryx, Excel (advanced)
 - Data: SQL, Google BigQuery, Tableau (certified 2022)
 - Web: HTML/CSS/JS (internal tools, PWA), Google Places API
-- ERP: SAP EWM (rollout support, process mapping, UAT)
+- ERP: SAP EWM business-side rollout (requirements, process mapping, test cases, UAT, go-live). No configuration experience.
 - Domain: packaging development (OEM, Tier-1, CKD/SKD), P&F and export costing, procurement, strategic sourcing, N-tier supplier risk, inventory control, obsolescence, process design and UAT
 
 ## Learning (not yet production evidence; scores zero in triage)
