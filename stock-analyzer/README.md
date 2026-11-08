@@ -23,9 +23,10 @@ python3 analyze.py            # live run: writes data/latest.json and data/brief
 python3 -m http.server 8080   # then open http://localhost:8080/
 ```
 
-No dependencies beyond Python 3.11+. The dashboard loads `data/latest.json`
-and falls back to the bundled `data/sample-brief.json` (synthetic data, clearly
-labelled) when no live brief exists yet.
+No dependencies beyond Python 3.11+. The dashboard loads `data/latest.json`.
+To preview the layout without network access, `python3 analyze.py --offline`
+writes a synthetic `data/sample-brief.json` (clearly labelled, never committed)
+that the dashboard falls back to when no live brief exists yet.
 
 ## Make it daily (3 steps)
 
