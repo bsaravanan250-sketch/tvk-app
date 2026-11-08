@@ -44,7 +44,8 @@ Stack: VBA, Power Automate, SQL / Google BigQuery, Power Query, Alteryx, Tableau
 - DB2 to BigQuery KPI migration (SQL): rebuilt ASN-receipt queries, weekly receiving-method-mix KPI per plant, about 6 hrs/week saved.
 - EWM cost calculation tool: annual savings per plant across five cost levers, per-plant dashboard, about 4 hrs/week saved.
 - Address validator (HTML + Google Places API): validate, standardise, geocode supplier addresses at scale, about 6 hrs/week saved.
-- Ten further tools: PPAP supplier chase, Resilinc recommit auto-mail, EWM KPI bowler mail, container calculator, raw material calculator, weather event tracker, comments analyzer, impact tracker, auto mail response picker, mail ID catcher.
+- Logistics route mapping tool (HTML): interactive dashboard mapping supplier-to-plant routes and transit chokepoints, replaced manual route analysis, about 6 hrs/week saved.
+- Ten further tools (17 total): PPAP supplier chase, Resilinc recommit auto-mail, EWM KPI bowler mail, container calculator, raw material calculator, weather event tracker, comments analyzer, impact tracker, auto mail response picker, mail ID catcher.
 
 ## Power Platform work (reported 2026-11-08, NOT yet on the CV; needs numbers before it counts)
 - Power Apps: built [canvas / model-driven?] app(s) for [which process], used by [N] users, backed by [SharePoint list / Dataverse / Excel]. [add number: users, records, hours saved]
