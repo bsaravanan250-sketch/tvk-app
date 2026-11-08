@@ -139,3 +139,90 @@ class EndToEnd(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DeepDive(unittest.TestCase):
+    """deepdive.py helpers on synthetic data (no network)."""
+
+    def setUp(self):
+        import deepdive as D
+        self.D = D
+
+    def fundamentals(self):
+        rows = lambda vals, dates: [{"date": d, "value": v, "currency": "INR"} for d, v in zip(dates, vals)]  # noqa: E731
+        fy = ["2023-03-31", "2024-03-31", "2025-03-31", "2026-03-31"]
+        q = ["2025-09-30", "2025-12-31", "2026-03-31", "2026-06-30", "2026-09-30"]
+        return {
+            "annualTotalRevenue": rows([100e9, 110e9, 125e9, 150e9], fy),
+            "annualNetIncome": rows([10e9, 12e9, 15e9, 18e9], fy),
+            "annualOperatingIncome": rows([15e9, 17e9, 20e9, 25e9], fy),
+            "annualStockholdersEquity": rows([80e9, 90e9, 100e9, 112e9], fy),
+            "annualTotalDebt": rows([30e9, 28e9, 25e9, 20e9], fy),
+            "annualCashAndCashEquivalents": rows([5e9, 6e9, 8e9, 10e9], fy),
+            "annualDilutedAverageShares": rows([1e9, 1e9, 1.02e9, 1.05e9], fy),
+            "annualInterestExpense": rows([3e9, 3e9, 2.5e9, 2e9], fy),
+            "annualFreeCashFlow": rows([8e9, 9e9, 12e9, 14e9], fy),
+            "quarterlyTotalRevenue": rows([35e9, 36e9, 38e9, 40e9, 42e9], q),
+            "quarterlyNetIncome": rows([4e9, 4.2e9, 4.5e9, 4.8e9, 5e9], q),
+            "quarterlyDilutedAverageShares": rows([1.05e9] * 5, q),
+            "quarterlyTotalDebt": rows([20e9] * 5, q),
+            "quarterlyCashAndCashEquivalents": rows([10e9] * 5, q),
+            "quarterlyStockholdersEquity": rows([112e9] * 5, q),
+            "trailingTotalRevenue": rows([156e9], ["2026-09-30"]),
+            "trailingNetIncome": rows([18.5e9], ["2026-09-30"]),
+            "trailingEBITDA": rows([30e9], ["2026-09-30"]),
+            "trailingFreeCashFlow": rows([15e9], ["2026-09-30"]),
+        }
+
+    def test_period_table_and_growth(self):
+        D = self.D
+        ann = D.enrich_rows(D.period_table(self.fundamentals(), "annual", D.ANNUAL))
+        self.assertEqual(len(ann), 4)
+        self.assertAlmostEqual(ann[-1]["revenue_growth_pct"], 20.0)
+        self.assertAlmostEqual(ann[-1]["net_margin_pct"], 12.0)
+        self.assertAlmostEqual(ann[-1]["net_debt"], 10e9)
+        self.assertAlmostEqual(ann[-1]["share_count_change_pct"], (1.05 / 1.02 - 1) * 100)
+        self.assertAlmostEqual(ann[-1]["interest_coverage"], 12.5)
+
+    def test_valuation_multiples(self):
+        D = self.D
+        hist = A.synthetic_history("X.NS", 1300, seed=5)
+        hist["close"][-1] = 200.0
+        v = D.valuation(self.fundamentals(), hist, financial=False)
+        self.assertAlmostEqual(v["market_cap"], 200.0 * 1.05e9)
+        self.assertAlmostEqual(v["enterprise_value"], v["market_cap"] + 10e9)
+        self.assertAlmostEqual(v["pe_ttm"], v["market_cap"] / 18.5e9)
+        self.assertAlmostEqual(v["ev_ebitda_ttm"], v["enterprise_value"] / 30e9)
+        self.assertAlmostEqual(v["fcf_yield_pct"], 15e9 / v["market_cap"] * 100)
+        self.assertEqual(len(v["history"]), 4)
+        bank = D.valuation(self.fundamentals(), hist, financial=True)
+        self.assertIsNone(bank["enterprise_value"]); self.assertIsNone(bank["fcf_yield_pct"])
+        self.assertIsNotNone(bank["pb"])
+
+    def test_levels_and_technicals(self):
+        D = self.D
+        hist = A.synthetic_history("Y.NS", 400, seed=9)
+        lv = D.levels(hist)
+        price = hist["close"][-1]
+        self.assertTrue(all(s < price for s in lv["support"]))
+        self.assertTrue(all(r > price for r in lv["resistance"]))
+        self.assertLessEqual(lv["low_52w"], price); self.assertGreaterEqual(lv["high_52w"], price)
+        t = D.technicals(hist)
+        self.assertEqual(len(t["daily_last_20"]), 20)
+        self.assertTrue(1 <= len(t["weekly"]) <= 26)
+
+    def test_prompts_fill_ticker_and_drop_empty_columns(self):
+        D = self.D
+        hist = A.synthetic_history("Z.NS", 400, seed=2)
+        f = self.fundamentals()
+        pack = {"symbol": "Z.NS", "name": "Zed Ltd", "currency": "INR", "financial_company": False,
+                "annual": D.enrich_rows(D.period_table(f, "annual", D.ANNUAL)),
+                "quarterly": D.enrich_rows(D.period_table(f, "quarterly", D.QUARTERLY)),
+                "valuation": D.valuation(f, hist, False), "technicals": D.technicals(hist),
+                "peers": [], "news": {"Company news": [{"title": "Zed wins order", "source": "X", "published": "2026-11-01T00:00:00+00:00"}]}}
+        prompts = D.build_prompts(pack)
+        self.assertEqual([p["key"] for p in prompts], ["business", "financials", "valuation", "competitors", "risks", "chart"])
+        self.assertIn("Zed Ltd (Z.NS)", prompts[0]["prompt"])
+        self.assertNotIn("[TICKER]", prompts[0]["prompt"])
+        self.assertNotIn("| FCF |", prompts[1]["data"].split("Quarterly")[1])  # quarterly FCF absent -> column dropped
+        self.assertIn("₹", prompts[1]["data"])

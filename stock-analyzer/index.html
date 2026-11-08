@@ -95,6 +95,8 @@ main{padding-top:14px}
 .action .ic{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:12px;flex:none}
 .action .ic.warn{color:#0b0b0b}
 .instr{font-size:13px;color:var(--ink-2)}
+.action .dive{margin-left:auto;font-size:12px;font-weight:600;color:var(--series);text-decoration:none;padding:3px 8px;border-radius:999px;background:var(--wash)}
+.action .dive:hover{text-decoration:underline}
 .spark{width:100%;height:60px;display:block}
 .kv{display:flex;flex-wrap:wrap;gap:6px}
 .kv span{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--wash);color:var(--ink-2);white-space:nowrap}
@@ -198,7 +200,7 @@ const ACT = {
 };
 const REGIME = {'risk-on':'var(--good)','neutral':'var(--warn)','risk-off':'var(--crit)','unknown':'var(--muted)'};
 let brief = null, filter = 'all', view = 'cards', query = '';
-let capital = 0, riskPct = 1, maxPosPct = 10;
+let capital = 0, riskPct = 1, maxPosPct = 10, dives = {};
 
 /* ---------- theme ---------- */
 const root = document.documentElement;
@@ -310,7 +312,8 @@ function card(s){
     <div class="meter" title="Composite score 0–100: trend ${s.components?.trend?.points}/30, momentum ${s.components?.momentum?.points}/25, relative strength ${s.components?.relative_strength?.points}/15, volume ${s.components?.volume?.points}/10, news ${s.components?.news?.points}/20">
       <div class="track"><div class="fill" style="width:${s.score}%;background:${a.color}"></div></div><span class="num">${Math.round(s.score)}</span>
     </div>
-    <div class="action"><span class="ic ${a.cls}" style="background:${a.color}">${a.glyph}</span>${esc(s.action)}</div>
+    <div class="action"><span class="ic ${a.cls}" style="background:${a.color}">${a.glyph}</span>${esc(s.action)}
+      ${dives[s.symbol] ? `<a class="dive" href="report.html?symbol=${encodeURIComponent(s.symbol)}" title="Six-part deep dive, data as of ${esc((dives[s.symbol].generated_at||'').slice(0,10))}">Deep dive →</a>` : ''}</div>
     <div class="instr">${esc(s.instruction)}</div>
     ${spark(s.spark)}
     <div class="kv">
@@ -416,6 +419,7 @@ async function load(){
       capital = cfg.capital || 500000; riskPct = cfg.risk_per_trade_pct || 1; maxPosPct = cfg.max_position_pct || 10;
       try { capital = +localStorage.getItem('sa_capital') || capital; riskPct = +localStorage.getItem('sa_risk') || riskPct; } catch (e) {}
       $('#capital').value = capital; $('#risk').value = riskPct;
+      try { const di = await fetch('data/deepdive/index.json', {cache:'no-store'}); if (di.ok) dives = await di.json(); } catch (e) { dives = {}; }
       if (brief.sample) banner('warn', `<b>Sample data.</b><span>This is a synthetic demo brief so you can see the layout. Run <code>python3 analyze.py</code> or enable the GitHub Actions schedule to replace it with a live brief.</span>`);
       else if (url !== candidates[0] && !custom) banner('warn', `<b>Showing fallback.</b><span>${esc(candidates[0])} could not be loaded.</span>`);
       else {

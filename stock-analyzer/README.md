@@ -64,6 +64,36 @@ override the band:
   risk-on (full exposure), neutral (60%) or risk-off (25%). In risk-off, no
   stock gets an Accumulate; the best setups become starter-size holds.
 
+## Deep dive: the six-part Wall Street breakdown
+
+`deepdive.py` runs the six classic analyst prompts (full breakdown, financials,
+valuation, competitors, risk map, chart read) for one ticker, but with the
+"[PASTE DATA]" parts filled automatically:
+
+| Prompt asks for | What the pipeline supplies |
+|---|---|
+| Latest filings and multiple periods | Four fiscal years and five quarters of revenue, margins, EPS, cash flow, debt, cash, equity and share count from Yahoo's fundamentals feed, with growth, margins, net debt, ROE, interest cover and dilution derived |
+| P/E, EV/EBITDA, P/S, FCF yield, history and peers | Multiples computed from price times shares; the same multiples reconstructed at each past fiscal year-end; a peer table with identical metrics (banks switch to P/E, P/B, ROE) |
+| 3 to 5 competitors | The `peers` list in `watchlist.json`, or `--peers A,B,C` |
+| Price and volume data | 26 weekly bars, 20 daily bars, moving averages, RSI, MACD, ATR, swing support and resistance, 52-week range, volume trend |
+| Recent earnings and catalysts | Three Google News searches: results, company news, outlook and analyst views |
+
+```bash
+python3 deepdive.py RELIANCE.NS          # with ANTHROPIC_API_KEY: Claude answers all six, saved as a report
+python3 deepdive.py HDFCBANK.NS --no-ai  # without: the six prompts, pre-filled with real data, for any assistant
+python3 -m http.server 8080              # then open report.html?symbol=RELIANCE.NS
+```
+
+Each run writes `data/deepdive/<SYMBOL>.json` (data pack plus report),
+`<SYMBOL>-prompts.md`, and updates `index.json` so the dashboard card shows a
+"Deep dive" link. The "Deep dive" GitHub Action runs it on demand for any
+symbol. The report page always shows the data each answer was given, so you
+can check the model against the numbers.
+
+Known gaps: Yahoo's feed is not the filing. It lacks segment revenue, order
+books, NPAs and management commentary, and quarterly cash flow is often empty
+for Indian companies. For banks, "revenue" follows Yahoo's definition, not NII.
+
 ## Position sizing
 
 Each card shows a stop 2 ATR below the close and a quantity sized so that
