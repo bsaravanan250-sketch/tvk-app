@@ -10,8 +10,9 @@
 - Remote policy you will accept: TODO
 - Current title: Supply Chain Analyst, Ford Global Technical & Business Center
 - Total years of professional experience: 8 (Apr 2018 to present)
-- Notice period: TODO
-- Minimum acceptable salary: TODO (give INR for India, EUR for Europe)
+- Notice period: 60 days
+- Current CTC: INR 16,00,000
+- Minimum acceptable salary: India INR 25,00,000 fixed; Europe see constraints.md
 - Work authorisation: Indian citizen. Europe requires sponsorship (EU Blue Card eligible on degree + experience if salary threshold met).
 
 ## Target
