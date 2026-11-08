@@ -25,7 +25,7 @@
 ### Supply Chain Analyst — Ford Global Technical & Business Center — Chennai — Mar 2021 to present
 Stack: VBA, Power Automate, SQL / Google BigQuery, Power Query, Alteryx, Tableau, HTML, SAP EWM
 - Restructured and automated supplier onboarding on the Ford Portal; removed manual handoffs, now a fully automated pipeline. [add number: suppliers/yr, days cut]
-- SAP EWM rollout, business-process side (no system configuration): froze requirements with plant stakeholders, mapped inbound/outbound/internal warehouse processes, aligned functional specs with the SAP team, developed test cases, led UAT, supported go-live. [add number: plants, test cases, users trained]
+- Owned business-side delivery of the SAP EWM rollout for 2 plants: froze requirements with warehouse stakeholders, mapped inbound, outbound and internal processes, authored 60 test cases, led UAT with 10 users, supported go-live. No system configuration.
 - $0.7M packaging cost savings at Struandale Engine Plant (South Africa); 100% elimination of single-use plastic packaging.
 - Led supplier coordination and alternative sourcing during COVID-19 and China lockdown; built Supplier Risk Analysis scorecard; mapped N-tier suppliers for semiconductor shortage.
 - Tableau dashboard auto-generating semiconductor value-stream reports for senior management; authored documentation for 4 critical processes.
